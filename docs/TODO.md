@@ -19,7 +19,6 @@
 |---|---|---|
 | T-1 | 按 `AGENT.md` §2 清单建 `docs/` 其余文档：`README.md`、`overview.md`、`structure.md`、`repo.md`、`architecture.md`、`business.md`、`progress.md` | 每份带五行头，只写自己那一层不复述 |
 | T-2 | 建构建 / 开发 / 检查 / 测试入口（`package.json`、`vite.config.ts`、`tsconfig.json`、lint、测试），落盘后回写 `AGENT.md` §5 | `D-20261030-03` |
-| T-5 | 补 `README.md` 项目说明（当前仅一行标题） | 与 `docs/overview.md` 不重复 |
 | T-6 | 盘出上游 `StreamingAssets` 三份 JSON 的完整字段字典并落 `docs/business.md` | 现只有 `AGENT.md` §3 的口径摘要 |
 | T-12 | 确认 GitHub Actions 首次运行通过（`ci` 的 `gates` job 绿） | 需先推送 `.github/workflows/ci.yml` |
 | T-13 | 视需要在 `.codebuddy/skills/` 建自动发现入口（当前技能在 `.agent/skills/`，须显式指向） | `.agent/README.md` §3 |
