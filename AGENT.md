@@ -27,14 +27,14 @@
 
 | 要查什么 | 去哪里 |
 |---|---|
-| 内容文档总览、写作约定 | `docs/README.md`（未建） |
-| 工程概述：定位、目标终端、技术栈与版本 | `docs/overview.md`（未建） |
-| 目录结构：模块布局、生成物、资源根 | `docs/structure.md`（未建） |
-| 仓库：版本控制、忽略链、分支模型 | `docs/repo.md`（未建） |
-| 架构：启动装配 → 数据加载 → 相机/体控 → 交互高亮 → UI 面板栈 → AI 工具调用闭环 | `docs/architecture.md`（未建） |
-| 业务域：九大系统 × 体素（男女两套）与教学内容 | `docs/business.md`（未建） |
+| 内容文档总览、写作约定、权威层级 | `docs/README.md` |
+| 工程概述：定位、目标终端、技术栈与版本、阶段 | `docs/overview.md` |
+| 目录结构：现有布局、`src/` 目标布局、产物、新路径检查清单 | `docs/structure.md` |
+| 仓库事实：远端、分支、忽略链、克隆后步骤 | `docs/repo.md` |
+| 架构：上游复原 ＋ Web 目标（初始化顺序、分层、渲染拾取、状态、AI 通道） | `docs/architecture.md` |
+| 业务域：九大系统、体素规模、字段字典、命名规则 | `docs/business.md` |
 | 当前状态与待办（**唯一清单**） | `docs/TODO.md` |
-| 已完成能力与交付进度（事实以 `RECORD.md` 为准） | `docs/progress.md`（未建） |
+| 已完成能力索引（事实以 `RECORD.md` 为准） | `docs/progress.md` |
 | 用户拍板记录（只追加） | `docs/DECISION.md` |
 | 提交台账（只追加） | `docs/RECORD.md` |
 | **需求原件（只读输入）** | `docs/requirement/raw/origin.md`（技术栈、仓库组织、功能与发布口径的原始出处；只读，不在此处改口径） |
@@ -88,12 +88,14 @@
 
 ## 4 提交与仓库操作纪律（摘要；细则归 `docs/repo.md` 与 `.workflow/`）
 
+- **禁止直接提交（红线）**：任何改动——代码、文档、台账、配置，无一例外——都必须走 **「主题分支 → PR → merge」**，禁止在 `main` 上直接 `git commit` 后 `git push origin main`，也禁止本地合并且不建 PR。唯一例外是流水线自身打 tag（`.github/workflows/release.yml` 的 `tag` job，由 `release/v*` 分支的 PR 合并触发，不是人工推送）。
 - 一次逻辑变更 = 一次提交，提交说明与改动文件树一致；禁止把无关改动打包进同一次提交。
 - **提交时同步收尾三份台账**（同批，不许留到下次）：① `docs/TODO.md` 删掉本次做完的条目；② `docs/RECORD.md` 追加一条；③ 含负责人新拍板则 `docs/DECISION.md` 追加 `D-…`。三项缺一视为本次提交未完成。
 - 中文提交说明：**UTF-8 无 BOM 文件** ＋ `git commit -F <文件>`；**禁止** `-m "中文"` 直接传参（本机编码会损坏）。
 - 提交后必须**回读原始字节复核**：`git log -1 --format=%B`（按 UTF-8 解码比对）；**控制台回显不可信**（本机 ACP=936 会把正确中文显示成乱码）。
-- 分支模型：唯一长期分支 `main`，跟踪 `origin/main`；禁止对其 force push、禁止跳钩子。需要并行时开 `feat/…` 分支，合并细则归 `.workflow/`。
-- 拉取与推送：提交前 `git pull --rebase origin main`，`status` 必须干净；禁止在未提交状态下切分支或拉取；推送用 `git push origin main`，失败先 rebase 再推。
+- **两条通道（`D-20261030-09`）**：① **普通改动** = 开 `feat/…` / `fix/…` / `docs/…` / `chore/…` 分支 → PR（标题即 squash 后的提交说明）→ merge，**不打 tag**；② **发版** = 开 `release/vX.Y.Z` 分支（同批把 `package.json` 的 `version` 改成一致值）→ PR → merge，合并动作触发流水线**自动打 tag ＋ 构建 ＋ publish**，人不手打 tag。
+- 分支模型：唯一长期分支 `main`，跟踪 `origin/main`；禁止 force push、禁止跳钩子。tag **从 `v0.0.0` 起**、格式 `vX.Y.Z`、严格递增、只由流水线创建；细则见 `.workflow/README.md` §5。
+- 拉取与推送：提交前 `git pull --rebase origin main`，`status` 必须干净；禁止在未提交状态下切分支或拉取；推送目标是**自己的主题分支**（`git push -u origin <分支>`），`main` 只接受 PR 合入。
 - 克隆或换机后先装门禁 hook：`node .workflow/scripts/install-hooks.mjs`（`.git/hooks/` 不入库，每份工作副本装一次）。
 
 ## 5 常用命令
@@ -108,15 +110,21 @@ git status                                                     # 提交前必须
 git pull --rebase origin main                                  # 拉取；有未提交改动先提交或 stash
 git add <具体路径>                                              # 只加本次逻辑变更涉及的文件，禁 git add -A
 git commit -F .git/commit-msg.txt                               # 中文说明走 UTF-8 无 BOM 文件
-git push origin main
+git push -u origin <分支>                                        # main 只接受 PR 合入，不直接推
 git log -1 --format=%B                                          # 提交后回读复核
 ```
 
-**发布**
+**两条通道**
 
 ```powershell
-git tag -a v0.1.0 -m "v0.1.0"    # 触发 .github/workflows/release.yml（web dist + Windows 安装包）
-git push origin v0.1.0
+# 通道 A：普通改动（PR + merge，不出 tag）
+git switch -c feat/<主题>
+git push -u origin feat/<主题>        # 开 PR 到 main，标题写成 type(scope): 摘要
+
+# 通道 B：发版（tag 由流水线创建，人不手打）
+git switch -c release/v0.0.0          # 同批改 package.json 的 version = 0.0.0
+node .workflow/scripts/check-release-version.mjs v0.0.0   # 本地预检：格式 / 起点 / 递增 / 版本一致
+git push -u origin release/v0.0.0     # PR 合并后 release.yml 自动打 tag + 构建 + publish
 ```
 
 **工程（尚不可用）**

@@ -3,7 +3,7 @@
 读者：AI
 类型：拍板台账（只追加）
 权威：负责人已拍板口径的唯一台账；待拍板项在 `TODO.md` §4
-状态：2026-10-30 建立，记 8 条（01～02 为协作口径，03～07 由需求原件 `requirement/raw/origin.md` 落账，08 为流程目录与门禁口径）
+状态：2026-10-30 建立，记 10 条（01～02 协作口径，03～07 由需求原件 `requirement/raw/origin.md` 落账，08 流程目录与门禁，09 两条通道与 tag 规则，10 禁止直接提交）
 依赖：`AGENT.md` §1（唯一手册与文档分工）
 
 ## 1 写法
@@ -61,3 +61,15 @@
 决定：`.github/` 只管远端流水线与协作模板（CI / release / PR / issue / CODEOWNERS）；`.workflow/` 管本地流程、门禁脚本、hook 与模板；`.agent/` 管 agent 技能。门禁四道（路径文档 / 提交说明 / 资产 / 台账），判定逻辑只存在于 `.workflow/scripts/gate-*.mjs` 一份，本地 pre-commit 与 CI 调同一脚本。
 影响：新增或调整门禁必须同时改脚本与 `.workflow/README.md` 判定表；技能只写"怎么做"不复制判定表；`--no-verify` 与 CI `continue-on-error` 视同绕过，须负责人同意。
 落地：`AGENT.md` §3（门禁是硬闸）、§5；`.workflow/`、`.github/`、`.agent/`。
+
+### D-20261030-09 两条通道：普通 PR 与发版
+
+决定：改动分两条通道——① **普通通道** = 主题分支（`feat/` `fix/` `docs/` `chore/`）→ PR → merge，不出 tag；② **发版通道** = `release/vX.Y.Z` 分支 → PR → merge，合并动作触发流水线**自动打 tag ＋ 构建 ＋ publish**，人不再手打 tag。tag 从 **`v0.0.0`** 起，格式 `vX.Y.Z`，严格递增，必须与 `package.json` 的 `version` 一致。
+影响：`main` 只接受 PR 合入；`release.yml` 增加 tag 解析/校验/创建 job（`check-release-version.mjs`）；`ci.yml` 增加 PR 标题校验（squash 即提交说明）；发版技能与 `.workflow/README.md` §5 同步改。
+落地：`.github/workflows/release.yml`、`.github/workflows/ci.yml`、`.workflow/scripts/check-release-version.mjs`、`.workflow/README.md` §5、`AGENT.md` §4、`.agent/skills/release/`。
+
+### D-20261030-10 禁止直接提交，一切改动必须 PR + merge
+
+决定：任何改动（代码、文档、台账、配置）都必须经「主题分支 → PR → merge」进入 `main`；禁止在 `main` 上直接 `git commit` 后 `git push origin main`，也禁止本地合并且不建 PR。唯一例外是流水线自身打 tag（由 `release/v*` 分支的 PR 合并触发）。
+影响：`main` 需开分支保护（`TODO.md` `T-14`）把纪律变成硬约束；agent 每次任务收尾的产出是「已推送的分支 + PR」，不是「已推到 main」；`README.md` 与 `.workflow/README.md` 同步写明。
+落地：`AGENT.md` §4（禁止直接提交·红线）、`README.md`（协作流程）、`.workflow/README.md` §5。

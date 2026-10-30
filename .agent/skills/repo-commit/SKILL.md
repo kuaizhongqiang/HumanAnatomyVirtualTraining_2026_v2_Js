@@ -19,17 +19,20 @@ description: This skill should be used when a task in this repository is finishe
    - 有负责人新拍板 → `docs/DECISION.md` 追加 `D-YYYYMMDD-NN`（决定 / 影响 / 落地三段）。
 4. **写说明文件**：按 `.workflow/templates/commit-message.md` 写到 `.git/commit-msg.txt`（UTF-8 **无 BOM**）。
 5. **跑门禁**：`node .workflow/scripts/gate-all.mjs --commit-msg .git/commit-msg.txt`，必须全绿。
-6. **提交推送**：
+6. **提交推送（禁止落到 main）**：
    ```powershell
+   git switch -c feat/<主题>            # 或 fix/ docs/ chore/ release/vX.Y.Z
    git add <具体路径>
    git commit -F .git/commit-msg.txt
-   git push origin main
+   git push -u origin <分支>
    ```
-7. **回读复核**：`git log -1 --format=%B`，确认中文未损坏；把真实短哈希补进 `docs/RECORD.md` 的版本列。
+7. **开 PR**：标题即 `type(scope): 摘要`（squash 后就是提交说明，`ci` 会校验）；等门禁绿后由负责人 merge。
+8. **回读复核**：`git log -1 --format=%B`，确认中文未损坏；合并后把真实短哈希补进 `docs/RECORD.md` 的版本列。
    - 哈希只能事后知道，故补记行单独提交一次；**纯台账补记提交不再为自己登行**（避免递归）。
 
 ## 坑
 
+- **直接 `git push origin main` 是严重违规**（`AGENT.md` §4、`D-20261030-10`）：agent 的产出永远是「已推送的分支 + PR」，不是「已推到 main」。
 - 中文直接进 `-m` 会编码损坏：说明一律走文件 + `-F`。
 - 控制台回显不可信（本机 ACP=936）：以 `git log --format=%B` 的 UTF-8 结果为准。
 - `gate-commit-msg` 会拦 BOM：用工具写文件时确认首字节不是 `EF BB BF`。

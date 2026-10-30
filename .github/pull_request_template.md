@@ -1,3 +1,10 @@
+## 通道
+
+- [ ] **通道 A（普通）**：主题分支 → PR → merge，不出版本 tag
+- [ ] **通道 B（发版）**：`release/vX.Y.Z` 分支，已同批改 `package.json` 的 `version`，merge 后由流水线打 tag 并 publish
+
+> PR 标题必须是 `type(scope): 摘要`（squash 合并时即提交说明，`ci` 会校验）；发版 PR 用 `chore(release): vX.Y.Z`。
+
 ## 这次改了什么
 
 <!-- 一句话说清逻辑变更；无关改动请拆开提 -->
