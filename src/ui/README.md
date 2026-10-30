@@ -1,19 +1,18 @@
 # Contract: src/ui
 
-Role: 表现层——应用外壳、主题 token 消费、双语字典；只发意图、不持有业务状态（状态归 `control`/`manager`）。
+Role: 表现层——屏幕编排、主题 token 消费、双语字典；只发意图、不持有业务状态（业务状态归 `control`/`manager`）。
 
 Files:
-- `shell.ts` — 外壳渲染与交互分发：顶栏（性别 / 语言 / 主题）、系统树、视口占位、详情卡、悬浮 AI 对话；状态集中在 `State`，事件用根节点委托。
-- `shell.css` — 外壳组件样式，只用 `src/style.css` 里的变量。
-- `i18n.ts` — 中英字典与 `t()`，`setLocale()` 切换；缺词回退为键名便于发现漏词。
+- `app.ts` — 屏幕状态机：`start` / `loading` / `content` 三屏切换，持有共享 `AppState`（性别、版本）。
+- `screens/` — 三个屏幕模块，见该目录 `README.md`。
+- `i18n.ts` — 中英字典与 `t()`，`setLocale()` 切换；缺词回退键名便于发现漏词。
 - `theme.ts` — `data-theme` 切换与 `localStorage` 记忆，首帧由 `index.html` 内联脚本兜底。
 - `i18n.test.ts` — 字典与插值的单元测试。
 
-Exports: `mountShell(root)`；`t` / `setLocale` / `getLocale` / `systemNameInEnglish`；`applyTheme` / `toggleTheme` / `currentTheme` / `ensureTheme`。
+Exports: `mountApp(root)`；`t` / `setLocale` / `getLocale` / `systemNameInEnglish`；`applyTheme` / `toggleTheme` / `currentTheme` / `ensureTheme`；类型 `ScreenName` / `AppState` / `Go`。
 
 Notes:
-- **mockup 阶段**：`shell.ts` 里所有业务数据来自 `../data/mockData`，三维区域是 SVG 占位；接 three.js 时只替换 `renderScene()` 与拾取回调，不改外层结构。
-- **悬浮毛玻璃**：面板 = 全幅 `.scene` 之上的绝对定位 `.panel`；玻璃质感靠 `backdrop-filter: blur + saturate + brightness`、`::before` 镜面高光（`--light-x/y` 由 `mousemove` 写入）与多层 `inset` 内发光；选中系统的配色以 `--tint` 注入，作为场景染色与面板环境光。
-- 重绘策略是「整树重绘 + 根节点事件委托」，所以不要在外壳 DOM 上挂一次性监听；滑块拖动走局部更新（重绘会打断拖拽）。
-- 玻璃面越多越费 GPU（参考实现建议每视口 2–3 个），降级策略见 `docs/TODO.md` `T-17`；`@supports` 兜底与 `prefers-reduced-motion` 已在 `shell.css` 处理。
-- 文案一律走 `t()`，色值一律走 CSS 变量（`AGENT.md` §3 表现层两条硬口径）。
+- **mockup 阶段**：屏幕里的业务数据来自 `../data/mockData`，三维区域是 SVG 占位；接 three.js 时只替换 `content.ts` 的 `stage()` 与拾取回调，不动外层结构。
+- **样式不在本目录**：所有 class 定义在 `../styles/`，清单见 `docs/ui-spec.md`；本目录只产出 class 名与结构。
+- 屏幕之间不互相引用，跨屏只走 `go(screen)`；切屏会重建 DOM，因此监听器都挂在屏幕根节点（事件委托）。
+- 文案一律走 `t()`（`AGENT.md` §3 表现层硬口径）；玻璃/光照参数只引用 `styles/tokens.css` 的变量。

@@ -3,7 +3,7 @@
 读者：AI
 类型：拍板台账（只追加）
 权威：负责人已拍板口径的唯一台账；待拍板项在 `TODO.md` §4
-状态：2026-10-30 建立，记 10 条（01～02 协作口径，03～07 由需求原件 `requirement/raw/origin.md` 落账，08 流程目录与门禁，09 两条通道与 tag 规则，10 禁止直接提交）
+状态：2026-10-30 建立，记 11 条（01～02 协作口径，03～07 由需求原件 `requirement/raw/origin.md` 落账，08 流程目录与门禁，09 两条通道与 tag 规则，10 禁止直接提交，11 媒体资产单一根且不入库）
 依赖：`AGENT.md` §1（唯一手册与文档分工）
 
 ## 1 写法
@@ -73,3 +73,9 @@
 决定：任何改动（代码、文档、台账、配置）都必须经「主题分支 → PR → merge」进入 `main`；禁止在 `main` 上直接 `git commit` 后 `git push origin main`，也禁止本地合并且不建 PR。唯一例外是流水线自身打 tag（由 `release/v*` 分支的 PR 合并触发）。
 影响：`main` 需开分支保护（`TODO.md` `T-14`）把纪律变成硬约束；agent 每次任务收尾的产出是「已推送的分支 + PR」，不是「已推到 main」；`README.md` 与 `.workflow/README.md` 同步写明。
 落地：`AGENT.md` §4（禁止直接提交·红线）、`README.md`（协作流程）、`.workflow/README.md` §5。
+
+### D-20261030-11 媒体资产单一根且不入库
+
+决定：视频 / 图片 / 模型 / 贴图**只有一个根** `public/media/`（`ui/` `video/` `models/` `textures/`），整目录进 `.gitignore`、一律不提交；本地用 `.workflow/scripts/pull-assets.mjs` 从上游 Unity 工程恢复。
+影响：仓库不含媒体二进制，clone 后必须先跑一次恢复脚本，否则开始/加载页无图、模型无 GLB；代码引用统一写相对路径 `media/...`；后续新增素材只改脚本的复制表，不再往仓库塞文件。
+落地：`.gitignore`（`public/media/`）、`.workflow/scripts/pull-assets.mjs`、`AGENT.md` §3（媒体资产）、`docs/structure.md` §3、`docs/repo.md` §4/§5、`docs/design/README.md` §3.3。

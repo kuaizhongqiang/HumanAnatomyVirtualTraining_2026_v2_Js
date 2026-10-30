@@ -12,6 +12,7 @@
 |---|---|---|
 | `scripts/gate-*.mjs` | 可执行的判定逻辑（零依赖，node ≥ 18） | 业务代码、需要 `npm install` 的依赖 |
 | `scripts/install-hooks.mjs` | 把 `hooks/` 装到 `.git/hooks/` | — |
+| `scripts/pull-assets.mjs` | 从上游 Unity 工程把视频 / 图片 / 模型 / 贴图复制到 `public/media/`（该目录不入库） | 手工零散把素材塞进别的目录 |
 | `hooks/` | `pre-commit`、`commit-msg` 两个 sh 包装，只调用 `scripts/` | 判定逻辑（逻辑只写一份） |
 | `templates/` | 提交说明等模板 | 待办 / 拍板（归 `docs/`） |
 
@@ -36,6 +37,14 @@ node .workflow/scripts/gate-all.mjs --commit-msg .git/commit-msg.txt   # 提交�
 
 ```powershell
 node .workflow/scripts/install-hooks.mjs    # 复制到 .git/hooks/，只需在克隆后跑一次
+```
+
+媒体资产（`public/media/`）不入库，克隆后**必须**补一次：
+
+```powershell
+node .workflow/scripts/pull-assets.mjs                  # 从 ../HumanAnatomyVirtualTraining_2026_v1.1 取
+node .workflow/scripts/pull-assets.mjs --from <Assets>  # 上游在别处时指定
+node .workflow/scripts/pull-assets.mjs --dry            # 只看清单不写盘
 ```
 
 `--no-verify` 属于绕过门禁，须先经负责人同意，并在提交说明里写明原因。

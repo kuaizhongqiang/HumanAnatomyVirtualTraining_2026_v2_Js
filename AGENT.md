@@ -35,6 +35,8 @@
 | 业务域：九大系统、体素规模、字段字典、命名规则 | `docs/business.md` |
 | 当前状态与待办（**唯一清单**） | `docs/TODO.md` |
 | 已完成能力索引（事实以 `RECORD.md` 为准） | `docs/progress.md` |
+| **UI 令牌与 class 清单**（改 class 必读） | `docs/ui-spec.md` |
+| **设计令牌规范页与三屏样张**（版面口径、9 幕预览、重渲脚本） | `docs/design/README.md` → `tokens.html` / `mockups.html` |
 | 用户拍板记录（只追加） | `docs/DECISION.md` |
 | 提交台账（只追加） | `docs/RECORD.md` |
 | **需求原件（只读输入）** | `docs/requirement/raw/origin.md`（技术栈、仓库组织、功能与发布口径的原始出处；只读，不在此处改口径） |
@@ -81,7 +83,7 @@
 - **表现层两条硬口径（`D-20261030-06`）**：① 可见文案一律走字典（中文 / English 双语可切换），源码与面板里禁写死中文；② 明暗主题走一套 token 变量（`data-theme` 或等价机制）切换，组件内禁写死色值。
 - **禁改**：`node_modules/`、`dist/`、`.cache/` 等依赖与生成物；上游工程全部内容（`Library/` `Temp/` `Logs/` `obj/` `*.csproj` `*.sln` `*.meta` `ProjectSettings/` 一律不碰、不复制）。
 - **产物目录只有两个**：`dist/`（web 构建产物）与 `release/`（electron 安装包），均由脚本生成、一律入忽略链、不入库；禁自造 `build/`、`out/` 之类第二套产物目录（历史教训：上游 Plastic 忽略规则无前导斜杠、任意深度匹配，`Build/` 会被静默排除，故沿用"不叫 build"的口径；忽略链细则见 `docs/repo.md`）。
-- **资产**：**无大资产门禁**——模型 / 贴图 / 视频 / 音频照原样提交，不设单文件体积上限；原始工程文件（`.blend` / `.max` / `.psd` 等源工程）不入库。业务素材统一入资产根，不得散落到 `src/` 或构建产物目录。
+- **媒体资产单一根且不入库（`D-20261030-11`）**：视频 / 图片 / 模型 / 贴图**只有一个根** `public/media/`，其下按用途分目录（`ui/` 界面图、`video/` 视频、`models/` 模型、`textures/` 贴图）；整个 `public/media/` 已进 `.gitignore`，**一律不提交**。换机/清空后用 `node .workflow/scripts/pull-assets.mjs` 从上游 Unity 工程恢复（脚本是唯一入口，禁止手工零散复制到别处）。代码里引用走相对路径 `media/...`，不得散落到 `src/` 或产物目录；文件名保持上游原名，便于与 Unity 工程对照（清单见 `docs/structure.md` §3）。原始工程文件（`.blend` / `.max` / `.psd` 等）同样不入库。
 - **门禁是硬闸**：提交前 `node .workflow/scripts/gate-all.mjs --commit-msg <说明文件>` 必须全绿；本地 hook 与 CI 调**同一脚本**，判定只写一份。新增门禁 = 在 `.workflow/scripts/` 加一个 `gate-*.mjs` ＋ 在 `.workflow/README.md` 判定表登记，两处同批。`--no-verify`、CI 里 `continue-on-error` 视同绕过门禁，须先经负责人同意并在提交说明写明原因。
 - **MCP 是单实例资源**：agentmemory、上游 Unity MCP、CDP 浏览器同一时刻只允许一个 agent 使用；用前申请、用完即放，纯读操作同样排队，禁并发。
 - **禁止**：删改他人未提交/未确认的改动；用 `--forced` / `--override` / `-y` 覆盖远端；在未提交状态下切分支或拉取；把中文直接写进命令行参数（说明文字一律走 UTF-8 文件）。

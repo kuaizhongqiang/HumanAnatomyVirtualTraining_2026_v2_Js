@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>设计令牌 · 人体解剖学知识仿真实训软件 v2</title>
+    <link rel="stylesheet" href="design.css" />
+  </head>
+  <body>
+    <header class="ds-head">
+      <div>
+        <h1>设计令牌（tokens）</h1>
+        <p>唯一令牌源：<code>src/styles/tokens.css</code> · 本页只做可视化核对 · 明暗两套同源</p>
+      </div>
+      <div class="ds-head__right">
+        <a class="ds-btn" href="mockups.html">→ 界面样张</a>
+        <button class="ds-btn" id="theme-btn">切换主题</button>
+      </div>
+    </header>
+
+    <main class="ds-main">
+      <section class="ds-section">
+        <h2>01 语义色（Semantics）</h2>
+        <p class="ds-note">实现侧只消费这一层；明暗差异只出现在 <code>tokens.css</code> 的两组 <code>:root[data-theme]</code>。</p>
+        <div class="ds-swatches" id="sw-semantic"></div>
+      </section>
+
+      <section class="ds-section">
+        <h2>02 玻璃与光学（Glass &amp; Optics）</h2>
+        <p class="ds-note">玻璃 = 半透明底 + blur/saturate/brightness + 镜面高光 + 多层内发光 + 色散边。数值见下表，实际用法见界面样张。</p>
+        <div class="ds-swatches" id="sw-glass"></div>
+        <table class="ds-table" id="tbl-glass"></table>
+      </section>
+
+      <section class="ds-section">
+        <h2>03 字体与字号（Type）</h2>
+        <p class="ds-note">只有六档字号：11 / 12 / 13 / 14 / 16 / 20 / 28；正文行高 1.55，长文 1.7。</p>
+        <table class="ds-table" id="tbl-type"></table>
+      </section>
+
+      <section class="ds-section">
+        <h2>04 间距与圆角（Space &amp; Radius）</h2>
+        <div class="ds-gallery" id="gal-space"></div>
+        <div class="ds-gallery" id="gal-radius"></div>
+      </section>
+
+      <section class="ds-section">
+        <h2>05 阴影与内发光（Elevation）</h2>
+        <p class="ds-note">三级抬升：静止 / hover / 对话框。内发光用来模拟环境反弹光，不额外加 border。</p>
+        <div class="ds-gallery" id="gal-shadow"></div>
+      </section>
+
+      <section class="ds-section">
+        <h2>06 组件（Components）</h2>
+        <p class="ds-note">每个 class 的职责见 <code>docs/ui-spec.md</code>；此处只核对视觉与状态。</p>
+
+        <div class="ds-gallery">
+          <span class="ds-label">按钮</span>
+          <button class="btn btn--primary">主行动</button>
+          <button class="btn btn--ghost">次行动</button>
+          <button class="btn btn--ghost btn--active">已开启</button>
+          <button class="btn btn--icon">☾</button>
+          <button class="btn btn--primary btn--large">加大号</button>
+        </div>
+
+        <div class="ds-gallery">
+          <span class="ds-label">分段选择</span>
+          <div class="seg">
+            <button class="seg__item seg__item--active">男</button>
+            <button class="seg__item">女</button>
+          </div>
+          <div class="seg">
+            <button class="seg__item seg__item--active">中</button>
+            <button class="seg__item">EN</button>
+          </div>
+        </div>
+
+        <div class="ds-gallery">
+          <span class="ds-label">标签 / 水印</span>
+          <span class="tag">Muscular_Zygomaticus_Minor</span>
+          <span class="watermark">试用版</span>
+        </div>
+
+        <div class="ds-gallery">
+          <span class="ds-label">表单行</span>
+          <div class="field" style="min-width: 320px">
+            <span class="field__label">性别</span>
+            <div class="seg">
+              <button class="seg__item seg__item--active">男</button>
+              <button class="seg__item">女</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ds-gallery">
+          <span class="ds-label">滑条</span>
+          <label class="range" style="min-width: 360px">
+            <span>透明度</span>
+            <input class="range__input" type="range" value="70" />
+            <b class="range__value">70%</b>
+          </label>
+        </div>
+
+        <div class="ds-gallery" style="align-items: stretch">
+          <span class="ds-label">系统树</span>
+          <ul class="tree" style="width: 300px; max-height: 220px">
+            <li class="tree__section tree__section--active">
+              <button class="tree__head">
+                <span class="tree__dot" style="background: #d9736b; color: #d9736b"></span>
+                <span class="tree__name">肌（运动）系统</span>
+                <span class="tree__count">141 项</span>
+              </button>
+              <div class="tree__list">
+                <button class="tree__leaf tree__leaf--active">
+                  <span class="tree__leaf-name">颧小肌</span>
+                  <span class="tree__leaf-id">Muscular_Zygomaticus_Minor</span>
+                </button>
+                <button class="tree__leaf">
+                  <span class="tree__leaf-name">颧大肌</span>
+                  <span class="tree__leaf-id">Muscular_Zygomaticus_Major</span>
+                </button>
+              </div>
+            </li>
+            <li class="tree__section">
+              <button class="tree__head">
+                <span class="tree__dot" style="background: #c9b189; color: #c9b189"></span>
+                <span class="tree__name">骨骼系统</span>
+                <span class="tree__count">27 项</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="ds-gallery" style="align-items: stretch">
+          <span class="ds-label">详情字段</span>
+          <dl class="detail__list" style="width: 360px; max-height: 200px">
+            <div class="detail__row">
+              <dt class="detail__term">形态</dt>
+              <dd class="detail__desc">属于面部薄束横纹肌，呈细长条索状，起自颧骨，纤维向下走行汇入口角周围的口轮匝肌。</dd>
+            </div>
+            <div class="detail__row">
+              <dt class="detail__term">位置</dt>
+              <dd class="detail__desc">位于颧骨前下方，口角外上方的面部皮下组织内</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="ds-gallery" style="align-items: stretch">
+          <span class="ds-label">对话气泡</span>
+          <div style="display: flex; flex-direction: column; gap: 8px; width: 340px">
+            <div class="chat__msg chat__msg--bot">你好，可以问我某个器官的位置、形态或功能。</div>
+            <div class="chat__msg chat__msg--user">颧小肌的功能是什么？</div>
+          </div>
+        </div>
+
+        <div class="ds-gallery" style="align-items: stretch">
+          <span class="ds-label">进度条</span>
+          <div style="width: 420px; display: flex; flex-direction: column; gap: 8px">
+            <div class="loading__bar" style="--progress: 62"><div class="loading__fill"></div></div>
+            <ul class="loading__steps">
+              <li class="loading__step loading__step--done">解剖数据</li>
+              <li class="loading__step loading__step--active">人体模型</li>
+              <li class="loading__step">材质与贴图</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="ds-gallery">
+          <span class="ds-label">轻提示</span>
+          <div class="toast toast--visible" style="position: static; transform: none">拆分 · mockup</div>
+        </div>
+      </section>
+
+      <section class="ds-section">
+        <h2>07 布局尺寸与层级</h2>
+        <table class="ds-table" id="tbl-layout"></table>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        var KEY = 'anatomy.design.theme';
+        var query = new URLSearchParams(location.search).get('theme');
+        var theme = query === 'light' || query === 'dark' ? query : localStorage.getItem(KEY) || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+
+        document.getElementById('theme-btn').addEventListener('click', function () {
+          theme = theme === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', theme);
+          localStorage.setItem(KEY, theme);
+        });
+
+        var cs = function (name) {
+          return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        };
+
+        function swatch(list, host, alphaStyle) {
+          host.innerHTML = list
+            .map(function (item) {
+              var value = cs(item[1]);
+              var painted = alphaStyle && item[2] ? 'background: ' + item[2] : 'background: var(' + item[1] + ')';
+              return (
+                '<div class="ds-swatch">' +
+                '<div class="ds-swatch__chip" style="' + painted + '"></div>' +
+                '<div class="ds-swatch__meta"><b>' + item[0] + '</b><code>' + item[1] + '</code><br>' +
+                (item[2] || value) +
+                '</div></div>'
+              );
+            })
+            .join('');
+        }
+
+        swatch(
+          [
+            ['底色', '--c-bg'],
+            ['底色（深）', '--c-bg-deep'],
+            ['面板面', '--c-surface'],
+            ['主文字', '--c-text-1'],
+            ['次文字', '--c-text-2'],
+            ['弱文字', '--c-text-3'],
+            ['分割线', '--c-line'],
+            ['品牌色', '--c-brand'],
+            ['品牌反色', '--c-brand-ink'],
+            ['品牌浅', '--c-brand-soft'],
+            ['危险', '--c-danger'],
+          ],
+          document.getElementById('sw-semantic')
+        );
+
+        swatch(
+          [
+            ['玻璃底', '--glass'],
+            ['玻璃底（强）', '--glass-strong'],
+            ['玻璃边框', '--glass-border'],
+            ['玻璃斜面', '--glass-sheen'],
+            ['镜面高光', '--specular'],
+            ['色散 A', '--chroma-a'],
+            ['色散 B', '--chroma-b'],
+            ['边缘暗线', '--edge-dark'],
+            ['场景冷光', '--glow-a'],
+            ['场景暖光', '--glow-b'],
+            ['轨道', '--track'],
+          ],
+          document.getElementById('sw-glass')
+        );
+
+        document.getElementById('tbl-glass').innerHTML =
+          '<tr><th>令牌</th><th>当前值</th><th>作用</th></tr>' +
+          [
+            ['--glass-blur', 'backdrop 模糊半径'],
+            ['--glass-sat', '饱和强化（决定像不像玻璃）'],
+            ['--glass-brightness', '整体提亮'],
+            ['--inner-glow', '内发光：顶部受光 + 底部环境反弹'],
+            ['--shadow-1', '静止态外投影'],
+            ['--shadow-2', 'hover / 悬浮态'],
+            ['--shadow-3', '对话框级'],
+          ]
+            .map(function (row) {
+              return '<tr><td><code>' + row[0] + '</code></td><td><code>' + cs(row[0]) + '</code></td><td>' + row[1] + '</td></tr>';
+            })
+            .join('');
+
+        document.getElementById('tbl-type').innerHTML =
+          '<tr><th>令牌</th><th>值</th><th>样例</th><th>用途</th></tr>' +
+          [
+            ['--fs-11', '辅助说明、水印'],
+            ['--fs-12', '面板小标题、次级信息'],
+            ['--fs-13', '正文、按钮、列表'],
+            ['--fs-14', '默认正文'],
+            ['--fs-16', '加载标题、加大号'],
+            ['--fs-20', '详情标题'],
+            ['--fs-28', '大标题（预留）'],
+          ]
+            .map(function (row) {
+              return (
+                '<tr><td><code>' + row[0] + '</code></td><td><code>' + cs(row[0]) + '</code></td>' +
+                '<td style="font-size: var(' + row[0] + ')">人体解剖学知识仿真实训 0123</td>' +
+                '<td>' + row[1] + '</td></tr>'
+              );
+            })
+            .join('');
+
+        var space = ['--space-1', '--space-2', '--space-3', '--space-4', '--space-5', '--space-6', '--space-8', '--space-10'];
+        document.getElementById('gal-space').innerHTML = space
+          .map(function (name) {
+            return (
+              '<div style="display:flex;align-items:center;gap:8px">' +
+              '<code style="font-family:var(--font-mono);font-size:11px;color:var(--c-text-3);width:88px">' + name + '</code>' +
+              '<div style="width:var(' + name + ');height:20px;border-radius:4px;background:var(--c-brand)"></div>' +
+              '<span style="font-size:11px;color:var(--c-text-3)">' + cs(name) + '</span>' +
+              '</div>'
+            );
+          })
+          .join('');
+
+        var radius = ['--radius-xs', '--radius-sm', '--radius-md', '--radius-lg', '--radius-xl', '--radius-pill'];
+        document.getElementById('gal-radius').innerHTML = radius
+          .map(function (name) {
+            return (
+              '<div style="display:flex;flex-direction:column;align-items:center;gap:6px">' +
+              '<div style="width:84px;height:48px;background:var(--c-brand-soft);border:1px solid var(--c-brand);border-radius:var(' + name + ')"></div>' +
+              '<code style="font-family:var(--font-mono);font-size:10px;color:var(--c-text-3)">' + name + '</code>' +
+              '</div>'
+            );
+          })
+          .join('');
+
+        document.getElementById('gal-shadow').innerHTML = ['--shadow-1', '--shadow-2', '--shadow-3']
+          .map(function (name) {
+            return (
+              '<div style="display:flex;flex-direction:column;gap:6px;align-items:center">' +
+              '<div style="width:180px;height:72px;border-radius:14px;background:var(--c-surface);box-shadow:var(' + name + '),var(--inner-glow)"></div>' +
+              '<code style="font-family:var(--font-mono);font-size:10px;color:var(--c-text-3)">' + name + '</code>' +
+              '</div>'
+            );
+          })
+          .join('');
+
+        document.getElementById('tbl-layout').innerHTML =
+          '<tr><th>令牌 / class</th><th>值</th><th>说明</th></tr>' +
+          [
+            ['--pad', '屏幕四周留白'],
+            ['--topbar-h', '顶栏高度'],
+            ['--sidebar-w', '系统树宽'],
+            ['--detail-w', '详情宽'],
+            ['--z-scene / --z-scene-ui', '场景 / 场景内悬浮件'],
+            ['--z-panel / --z-float', '面板 / 悬浮球'],
+            ['--z-toast / --z-overlay', '轻提示 / 覆盖层（预留）'],
+          ]
+            .map(function (row) {
+              return '<tr><td><code>' + row[0] + '</code></td><td><code>' + cs(row[0]) + '</code></td><td>' + row[1] + '</td></tr>';
+            })
+            .join('');
+      })();
+    </script>
+  </body>
+</html>

@@ -3,7 +3,7 @@
 读者：AI
 类型：提交台账（只追加）
 权威：已进入仓库的提交的唯一台账；待办见 `TODO.md`，拍板见 `DECISION.md`
-状态：2026-10-30 建立，记 8 条
+状态：2026-10-30 建立，记 9 条
 依赖：`AGENT.md` §4（提交纪律）、`docs/repo.md`（未建，仓库事实）
 
 ## 1 写法
@@ -26,3 +26,4 @@
 | R-20261030-06 | 2026-10-30 | PR #1 `f713606`、PR #2 `3ce5901`；保护配置提交见本 PR | PR 通道实跑两例（`gh`）；仓库转 public 后开启 `main` 分支保护并把配置入库（`.workflow/branch-protection.json`），红线变硬约束；`T-12`、`T-14` 完成删条；补记 PR #2 的台账欠账 | `docs/repo.md`、`docs/TODO.md`、`docs/progress.md`、`.workflow/branch-protection.json`、`AGENT.md`、`.workflow/README.md` |
 | R-20261030-07 | 2026-10-30 | 分支 `feat/scaffold-ui-mockup`（哈希见本 PR 合并提交） | 工程脚手架（`vite`＋`ts` strict＋`vitest`＋`eslint`，四个脚本全绿）与 UI mockup（外壳 ＋ 明暗双主题 ＋ 中英双语 ＋ 采样数据 ＋ 7 例测试）；`T-2`、`T-10` 完成，`T-9` 收口为 `T-16` | `package.json`、`tsconfig.json`、`vite.config.ts`、`vitest.config.ts`、`eslint.config.js`、`index.html`、`src/`、`AGENT.md`、`docs/` |
 | R-20261030-08 | 2026-10-30 | 分支 `feat/liquid-glass`（哈希见本 PR 合并提交） | UI 由三列全屏改为**全幅场景 ＋ 悬浮毛玻璃面板**：`blur+saturate+brightness` 基底、指针跟随镜面高光、多层 `inset` 内发光与 ±1px 色散、`--tint` 系统染色全局光；`@supports` 与 `prefers-reduced-motion` 兜底；借鉴与不采纳理由落 `architecture.md` §2.5，新增 `T-17` | `src/ui/shell.css`、`src/ui/shell.ts`、`src/style.css`、`docs/architecture.md`、`docs/progress.md`、`docs/TODO.md`、`src/ui/README.md` |
+| R-20261030-09 | 2026-10-30 | 分支 `feat/ui-pages-assets`（哈希见本 PR 合并提交） | ① 样式拆四层（`tokens`/`base`/`layout`/`components`，class 清单落 `docs/ui-spec.md`）；② 三屏（`start`/`loading`/`content`）＋ `app.ts` 状态机；③ 开始页与加载页按上游 `StartPanel`/`LoadingPanel` 照搬（`<video>` 开场、任意点击跳过、纯白遮罩、「进入软件」；加载=背景＋随机提示＋进度条）；④ 媒体资产归并到单一根 `public/media/` 并整目录忽略，新增 `pull-assets.mjs` 恢复；⑤ `docs/design/` 设计样张（令牌页 ＋ 9 幕合屏 ＋ 8 面板逐节 ＋ 覆盖矩阵 ＋ 17 张预览 ＋ 重渲脚本）；落账 `D-20261030-11`，新增 `T-19` | `src/styles/`、`src/ui/`、`docs/design/`、`docs/ui-spec.md`、`.workflow/scripts/pull-assets.mjs`、`.gitignore`、`AGENT.md`、`docs/structure.md`、`docs/repo.md`、`docs/DECISION.md`、`docs/progress.md`、`docs/TODO.md` |

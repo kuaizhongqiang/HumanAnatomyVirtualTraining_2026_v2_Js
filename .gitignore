@@ -6,6 +6,10 @@ release/
 coverage/
 *.tsbuildinfo
 
+# 媒体资产：视频 / 图片 / 模型 / 贴图统一在 public/media/，一律不入库
+# 恢复方式：node .workflow/scripts/pull-assets.mjs（从上游 Unity 工程复制）
+public/media/
+
 # 日志与临时文件
 *.log
 npm-debug.log*

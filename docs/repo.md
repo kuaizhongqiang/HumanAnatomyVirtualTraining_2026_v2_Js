@@ -37,8 +37,9 @@
 
 ```powershell
 node .workflow/scripts/install-hooks.mjs      # 装 pre-commit / commit-msg（每份工作副本一次）
+node .workflow/scripts/pull-assets.mjs        # 恢复媒体资产到 public/media/（不入库，必须本地跑）
 node .workflow/scripts/gate-all.mjs           # 自查
-npm install                                   # 脚手架落地后（TODO.md T-2）
+npm install                                   # 依赖
 ```
 
 ## 5 忽略链（`.gitignore` 与理由）
@@ -47,6 +48,7 @@ npm install                                   # 脚手架落地后（TODO.md T-2
 |---|---|
 | `node_modules/`、`.vite/`、`coverage/` | 依赖与缓存，可复算 |
 | `dist/`、`release/` | 构建产物，只由 CI 产出 |
+| `public/media/` | **媒体资产单一根**（视频 / 图片 / 模型 / 贴图），体积大且属上游交付物，一律不入库；用 `pull-assets.mjs` 恢复 |
 | `*.tsbuildinfo` | 增量编译缓存 |
 | `*.log`、`npm-debug.log*`、`tmp/`、`*.tmp` | 运行期噪声 |
 | `.vscode/*`（保留 `extensions.json`）、`.idea/`、`.DS_Store`、`Thumbs.db` | 本地编辑器/系统文件 |

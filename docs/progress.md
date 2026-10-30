@@ -27,6 +27,8 @@
 | 工程脚手架 | `vite` ＋ `ts`（strict）＋ `vitest` ＋ `eslint`；`build` / `typecheck` / `lint` / `test` 四项本地全绿 | `package.json`、`tsconfig.json`、`vite.config.ts` |
 | UI mockup | 全幅场景 ＋ **悬浮毛玻璃面板**（顶栏 / 系统树 / 详情 / AI 对话）：`blur+saturate+brightness` 基底、跟随指针的镜面高光、多层 `inset` 内发光与 ±1px 色散；明暗双主题 ＋ 中英切换（`?theme=` 可直看） | `src/ui/shell.css`、`docs/architecture.md` §2.5 |
 | 数据采样 | 从上游抽取每系统 2 项、描述截断，含结构断言测试（3 例） | `src/data/sample/human-sample.json` |
+| 媒体资产根 | 视频/图片/模型/贴图统一 `public/media/` 且**不入库**，`pull-assets.mjs` 一条命令从上游恢复（13 个文件 / 约 50MB） | `.workflow/scripts/pull-assets.mjs`、`docs/structure.md` §3 |
+| 设计样张 | `docs/design/`：令牌规范页 ＋ 三屏 9 幕合屏 ＋ 8 个面板逐节解剖 ＋ 覆盖矩阵 ＋ 17 张 1920×1080 预览 ＋ 重渲脚本 | `docs/design/README.md` |
 
 ## 2 未完成（指针）
 
