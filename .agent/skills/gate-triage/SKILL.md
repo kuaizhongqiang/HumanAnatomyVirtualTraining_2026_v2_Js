@@ -23,6 +23,7 @@ description: This skill should be used when the repository gates fail - locally 
 1. 单跑失败的那道门禁拿到完整清单：`node .workflow/scripts/gate-doc-paths.mjs`（替换为对应脚本）。
 2. 按上表修**成因**，不改门禁脚本本身；确认脚本判据过严时，先改 `.workflow/README.md` 的判定表再改脚本（同批）。
 3. 全量复跑：`node .workflow/scripts/gate-all.mjs --commit-msg .git/commit-msg.txt`。
+4. CI 侧红了先看具体 job 与日志：`gh pr checks` → `gh run view <run-id> --log-failed`（GitHub MCP 不可用，用 `gh`）。
 
 ## 不要做
 

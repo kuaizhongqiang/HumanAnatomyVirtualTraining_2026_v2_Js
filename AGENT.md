@@ -114,6 +114,16 @@ git push -u origin <分支>                                        # main 只接
 git log -1 --format=%B                                          # 提交后回读复核
 ```
 
+**PR 与 GitHub 侧（一律用 `gh`；GitHub MCP 凭据已失效，不作为通道）**
+
+```powershell
+gh pr create --base main --head <分支> --title "<type>(<scope>): <摘要>" --body-file .github/pull_request_template.md
+gh pr checks --watch                    # 等 ci 的 gates job 绿
+gh pr merge <编号> --merge --delete-branch
+gh run list --workflow=ci.yml --limit 3
+gh run view <run-id> --log-failed       # CI 红了看失败日志
+```
+
 **两条通道**
 
 ```powershell

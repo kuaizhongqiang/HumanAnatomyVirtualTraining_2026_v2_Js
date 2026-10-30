@@ -11,6 +11,7 @@
 | 项 | 值 |
 |---|---|
 | 远端 | `https://github.com/kuaizhongqiang/HumanAnatomyVirtualTraining_2026_v2_Js.git`（`origin`） |
+| 可见性 | **private**（未鉴权的 GitHub API 会返回 404，不代表仓库或 Actions 不存在） |
 | 长期分支 | `main`（跟踪 `origin/main`） |
 | 提交身份 | `kuaizhongqiang <kuaizhongqiang@users.noreply.github.com>` |
 | 换行 | `core.autocrlf=true`（工作副本 CRLF，库内 LF） |
@@ -47,6 +48,10 @@ npm install                                   # 脚手架落地后（TODO.md T-2
 
 门禁 `gate-assets` 会**再查一遍**：生成物目录或原始工程文件一旦被跟踪即 FAIL——忽略链与门禁是两道独立保险，不要指望其中一道。
 
-## 6 提交说明与复核
+## 6 GitHub 侧操作（一律用 `gh`）
+
+GitHub MCP 客户端凭据曾失效（`Bad credentials`），**不作为可用通道**；本机 `gh` 已登录 `kuaizhongqiang`（含 `repo` 权限：可开 PR、看 run 日志、改仓库设置）。命令清单见 `AGENT.md` §5，流程见 `.workflow/README.md` §5。
+
+## 7 提交说明与复核
 
 细则只有一处：`AGENT.md` §4（禁止直接提交、说明文件、回读复核、台账三件）；两条通道的步骤见 `.workflow/README.md` §5。此处不复述。
