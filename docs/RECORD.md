@@ -3,7 +3,7 @@
 读者：AI
 类型：提交台账（只追加）
 权威：已进入仓库的提交的唯一台账；待办见 `TODO.md`，拍板见 `DECISION.md`
-状态：2026-10-30 建立，记 5 条
+状态：2026-10-30 建立，记 6 条
 依赖：`AGENT.md` §4（提交纪律）、`docs/repo.md`（未建，仓库事实）
 
 ## 1 写法
@@ -23,3 +23,4 @@
 | R-20261030-03 | 2026-10-30 | 分支 `chore/release-lanes`：`5f88459`、`225b8f9`、`1bd48c9` ＋ 文档提交；经 `--no-ff` 合并入 `main`（合并提交见 `main` 顶端） | 两条通道（`release.yml` 自动打 tag、`ci.yml` PR 标题门禁、`check-release-version.mjs`）、禁止直接提交红线、根 `README`、七份内容文档全量落地；落账 `D-20261030-09`、`D-20261030-10` | `.github/`、`.workflow/`、`.agent/`、`docs/`、`AGENT.md`、`README.md` |
 | R-20261030-04 | 2026-10-30 | git `c84159e`（main，合并提交） | 依「哈希补记另起一条」补记 `R-20261030-03` 的合并提交：`chore/release-lanes` 以 `--no-ff` 合入 `main`；当时 PR 通道因 GitHub MCP 凭据失效未能使用 | `docs/RECORD.md` |
 | R-20261030-05 | 2026-10-30 | 分支 `chore/gh-lane`（哈希见本 PR 合并提交） | PR 通道改用 `gh`：`AGENT.md` §5 增 PR/GitHub 命令区、`.workflow/README.md` §3 与 §5.1 补 `gh pr create/checks/merge`、`repo-commit`／`gate-triage`／`release` 三个技能改为 `gh` 口径 | `AGENT.md`、`.workflow/README.md`、`.agent/skills/`、`docs/RECORD.md` |
+| R-20261030-06 | 2026-10-30 | PR #1 `f713606`、PR #2 `3ce5901`；保护配置提交见本 PR | PR 通道实跑两例（`gh`）；仓库转 public 后开启 `main` 分支保护并把配置入库（`.workflow/branch-protection.json`），红线变硬约束；`T-12`、`T-14` 完成删条；补记 PR #2 的台账欠账 | `docs/repo.md`、`docs/TODO.md`、`docs/progress.md`、`.workflow/branch-protection.json`、`AGENT.md`、`.workflow/README.md` |

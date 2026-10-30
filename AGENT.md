@@ -94,7 +94,7 @@
 - 中文提交说明：**UTF-8 无 BOM 文件** ＋ `git commit -F <文件>`；**禁止** `-m "中文"` 直接传参（本机编码会损坏）。
 - 提交后必须**回读原始字节复核**：`git log -1 --format=%B`（按 UTF-8 解码比对）；**控制台回显不可信**（本机 ACP=936 会把正确中文显示成乱码）。
 - **两条通道（`D-20261030-09`）**：① **普通改动** = 开 `feat/…` / `fix/…` / `docs/…` / `chore/…` 分支 → PR（标题即 squash 后的提交说明）→ merge，**不打 tag**；② **发版** = 开 `release/vX.Y.Z` 分支（同批把 `package.json` 的 `version` 改成一致值）→ PR → merge，合并动作触发流水线**自动打 tag ＋ 构建 ＋ publish**，人不手打 tag。
-- 分支模型：唯一长期分支 `main`，跟踪 `origin/main`；禁止 force push、禁止跳钩子。tag **从 `v0.0.0` 起**、格式 `vX.Y.Z`、严格递增、只由流水线创建；细则见 `.workflow/README.md` §5。
+- 分支模型：唯一长期分支 `main`，跟踪 `origin/main`；禁止 force push、禁止跳钩子。tag **从 `v0.0.0` 起**、格式 `vX.Y.Z`、严格递增、只由流水线创建；细则见 `.workflow/README.md` §5。`main` 已开分支保护（PR ＋ `门禁`/`构建` 检查），红线从此是硬拦，见 `docs/repo.md` §2。
 - 拉取与推送：提交前 `git pull --rebase origin main`，`status` 必须干净；禁止在未提交状态下切分支或拉取；推送目标是**自己的主题分支**（`git push -u origin <分支>`），`main` 只接受 PR 合入。
 - 克隆或换机后先装门禁 hook：`node .workflow/scripts/install-hooks.mjs`（`.git/hooks/` 不入库，每份工作副本装一次）。
 
