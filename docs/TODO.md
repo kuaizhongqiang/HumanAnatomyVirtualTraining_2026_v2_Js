@@ -19,7 +19,7 @@
 |---|---|---|
 | T-2 | 建构建 / 开发 / 检查 / 测试入口（`package.json`、`vite.config.ts`、`tsconfig.json`、lint、测试），落盘后回写 `AGENT.md` §5 | `D-20261030-03` |
 | T-13 | 视需要在 `.codebuddy/skills/` 建自动发现入口（当前技能在 `.agent/skills/`，须显式指向） | `.agent/README.md` §3 |
-| T-14 | 在 GitHub 仓库设置里开 `main` 分支保护：只接受 PR、必须过 `ci`、禁 force push | `D-20261030-09`、`D-20261030-10`（属仓库设置，代码里做不到） |
+| T-14 | 开 `main` 分支保护：只接受 PR、必须过 `ci`（`门禁`＋`构建`）、禁 force push | **阻塞于 GitHub 计划**：private 仓库返回 403「Upgrade to GitHub Pro or make this repository public」。升级 Pro 或转 public 后一条命令即可（配置见 `docs/repo.md` §2 注） |
 | T-15 | 定模型资产根与 GLB 拆分粒度（整体 / 按系统 / 按体素），落 `docs/structure.md` §3 与 `docs/architecture.md` §2.3 | `P-5` 已定转换方式，粒度未定 |
 
 ## 3 开发待办（按域）

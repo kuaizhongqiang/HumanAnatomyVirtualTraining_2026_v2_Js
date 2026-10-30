@@ -22,7 +22,7 @@
 - **禁止直接提交到 `main`**：一切改动走「主题分支 → PR → merge」（`AGENT.md` §4、`D-20261030-10`）。
 - 通道 A（普通）：`feat/` `fix/` `docs/` `chore/` 分支 → PR → merge，不出 tag。
 - 通道 B（发版）：`release/vX.Y.Z` → PR → merge，合并触发流水线打 tag 并 publish。
-- 分支保护（要求 PR、要求 `ci` 通过、禁 force push）**尚未开启**，属仓库设置，见 `T-14`。
+- 分支保护（要求 PR、要求 `ci` 通过、禁 force push）**尚未开启**。实测 `gh api -X PUT .../branches/main/protection` 返回 **403**：private 仓库需 GitHub **Pro** 或转 public 才能启用（`TODO.md` `T-14`）。解锁后一条命令即可，配置要点：`required_status_checks.contexts = ["门禁","构建"]`、`allow_force_pushes=false`、`required_approving_review_count=0`（要求 PR 但不要求人工审批）。
 
 ## 3 tag 规则（结论）
 
