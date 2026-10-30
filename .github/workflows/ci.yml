@@ -28,6 +28,14 @@ jobs:
         run: |
           git log -1 --pretty=%B > "$RUNNER_TEMP/commit-msg.txt"
           node .workflow/scripts/gate-commit-msg.mjs "$RUNNER_TEMP/commit-msg.txt"
+      - name: PR 标题门禁（squash 合并会当作提交说明）
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          printf '%s\n' "$PR_TITLE" > "$RUNNER_TEMP/pr-title.txt"
+          node .workflow/scripts/gate-commit-msg.mjs "$RUNNER_TEMP/pr-title.txt"
 
   build:
     name: 构建

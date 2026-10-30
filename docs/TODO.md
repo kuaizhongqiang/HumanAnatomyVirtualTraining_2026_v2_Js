@@ -3,7 +3,7 @@
 读者：AI
 类型：待办清单（唯一清单）
 权威：本工程「还没做 / 建议做」的唯一台账；已完成能力见 `progress.md`（未建），已拍板见 `DECISION.md`，已提交见 `RECORD.md`
-状态：2026-10-30 建立；同日按需求原件 `requirement/raw/origin.md` 清空 §4（原 `P-1`～`P-5` 全部拍板，见 `DECISION.md` `D-20261030-03`～`07`）并重排待办；同日流程基建落地（`.workflow/` `.github/` `.agent/`），删除已完成的原 `T-3`（`.gitignore`）、`T-4`（`.workflow/`），新增 `T-12`、`T-13`
+状态：2026-10-30 建立；同日按需求原件 `requirement/raw/origin.md` 清空 §4（原 `P-1`～`P-5` 全部拍板，见 `DECISION.md` `D-20261030-03`～`07`）并重排待办；同日流程基建落地（`.workflow/` `.github/` `.agent/`），删除已完成的原 `T-3`（`.gitignore`）、`T-4`（`.workflow/`），新增 `T-12`、`T-13`；确定两条通道与 tag 规则（`D-20261030-09`），新增 `T-14`
 依赖：`AGENT.md`（纪律与索引）、`../HumanAnatomyVirtualTraining_2026_v1.1`（上游只读事实源）
 
 ## 1 写法
@@ -23,6 +23,7 @@
 | T-6 | 盘出上游 `StreamingAssets` 三份 JSON 的完整字段字典并落 `docs/business.md` | 现只有 `AGENT.md` §3 的口径摘要 |
 | T-12 | 确认 GitHub Actions 首次运行通过（`ci` 的 `gates` job 绿） | 需先推送 `.github/workflows/ci.yml` |
 | T-13 | 视需要在 `.codebuddy/skills/` 建自动发现入口（当前技能在 `.agent/skills/`，须显式指向） | `.agent/README.md` §3 |
+| T-14 | 在 GitHub 仓库设置里开 `main` 分支保护：只接受 PR、必须过 `ci`、禁 force push | `D-20261030-09`（属仓库设置，代码里做不到） |
 
 ## 3 开发待办（按域）
 

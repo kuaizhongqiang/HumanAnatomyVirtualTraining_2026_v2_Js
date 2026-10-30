@@ -92,7 +92,8 @@
 - **提交时同步收尾三份台账**（同批，不许留到下次）：① `docs/TODO.md` 删掉本次做完的条目；② `docs/RECORD.md` 追加一条；③ 含负责人新拍板则 `docs/DECISION.md` 追加 `D-…`。三项缺一视为本次提交未完成。
 - 中文提交说明：**UTF-8 无 BOM 文件** ＋ `git commit -F <文件>`；**禁止** `-m "中文"` 直接传参（本机编码会损坏）。
 - 提交后必须**回读原始字节复核**：`git log -1 --format=%B`（按 UTF-8 解码比对）；**控制台回显不可信**（本机 ACP=936 会把正确中文显示成乱码）。
-- 分支模型：唯一长期分支 `main`，跟踪 `origin/main`；禁止对其 force push、禁止跳钩子。需要并行时开 `feat/…` 分支，合并细则归 `.workflow/`。
+- **两条通道（`D-20261030-09`）**：① **普通改动** = 开 `feat/…` / `fix/…` / `docs/…` / `chore/…` 分支 → PR（标题即 squash 后的提交说明）→ merge，**不打 tag**；② **发版** = 开 `release/vX.Y.Z` 分支（同批把 `package.json` 的 `version` 改成一致值）→ PR → merge，合并动作触发流水线**自动打 tag ＋ 构建 ＋ publish**，人不手打 tag。
+- 分支模型：唯一长期分支 `main`，跟踪 `origin/main`，**只接受 PR 合入**（禁止本地直接 push）；禁止 force push、禁止跳钩子。tag **从 `v0.0.0` 起**、格式 `vX.Y.Z`、严格递增、只由流水线创建；细则见 `.workflow/README.md` §5。
 - 拉取与推送：提交前 `git pull --rebase origin main`，`status` 必须干净；禁止在未提交状态下切分支或拉取；推送用 `git push origin main`，失败先 rebase 再推。
 - 克隆或换机后先装门禁 hook：`node .workflow/scripts/install-hooks.mjs`（`.git/hooks/` 不入库，每份工作副本装一次）。
 
@@ -108,15 +109,21 @@ git status                                                     # 提交前必须
 git pull --rebase origin main                                  # 拉取；有未提交改动先提交或 stash
 git add <具体路径>                                              # 只加本次逻辑变更涉及的文件，禁 git add -A
 git commit -F .git/commit-msg.txt                               # 中文说明走 UTF-8 无 BOM 文件
-git push origin main
+git push -u origin <分支>                                        # main 只接受 PR 合入，不直接推
 git log -1 --format=%B                                          # 提交后回读复核
 ```
 
-**发布**
+**两条通道**
 
 ```powershell
-git tag -a v0.1.0 -m "v0.1.0"    # 触发 .github/workflows/release.yml（web dist + Windows 安装包）
-git push origin v0.1.0
+# 通道 A：普通改动（PR + merge，不出 tag）
+git switch -c feat/<主题>
+git push -u origin feat/<主题>        # 开 PR 到 main，标题写成 type(scope): 摘要
+
+# 通道 B：发版（tag 由流水线创建，人不手打）
+git switch -c release/v0.0.0          # 同批改 package.json 的 version = 0.0.0
+node .workflow/scripts/check-release-version.mjs v0.0.0   # 本地预检：格式 / 起点 / 递增 / 版本一致
+git push -u origin release/v0.0.0     # PR 合并后 release.yml 自动打 tag + 构建 + publish
 ```
 
 **工程（尚不可用）**
