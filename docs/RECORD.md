@@ -3,7 +3,7 @@
 读者：AI
 类型：提交台账（只追加）
 权威：已进入仓库的提交的唯一台账；待办见 `TODO.md`，拍板见 `DECISION.md`
-状态：2026-10-30 建立，记 1 条
+状态：2026-10-30 建立，记 2 条
 依赖：`AGENT.md` §4（提交纪律）、`docs/repo.md`（未建，仓库事实）
 
 ## 1 写法
@@ -19,3 +19,4 @@
 | 编号 | 日期 | 版本 | 变更 | 涉及路径 |
 |---|---|---|---|---|
 | R-20261030-01 | 2026-10-30 | git `1067331`（main） | 建立唯一手册 `AGENT.md` 与指针 `CODEBUDDY.md`；建三份台账；录需求原件；落账 `D-20261030-01`～`07` | `AGENT.md`、`CODEBUDDY.md`、`docs/TODO.md`、`docs/RECORD.md`、`docs/DECISION.md`、`docs/requirement/raw/origin.md` |
+| R-20261030-02 | 2026-10-30 | git `b29e27e`（main） | 建 `.workflow/`（四道门禁 ＋ hook ＋ 模板）、`.github/`（ci / release / 协作模板）、`.agent/`（4 技能）、`.gitignore`；落账 `D-20261030-08` | `.workflow/`、`.github/`、`.agent/`、`.gitignore`、`AGENT.md`、`docs/TODO.md`、`docs/DECISION.md` |
