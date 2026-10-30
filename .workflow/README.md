@@ -46,9 +46,15 @@ node .workflow/scripts/install-hooks.mjs    # 复制到 .git/hooks/，只需在�
 2. 改代码：`src/` 内同批改该路径 `README.md` 的 `Files` / `Exports` / `Notes`。
 3. 收尾三份台账：`docs/TODO.md` 删做完的条目、`docs/RECORD.md` 追加、有拍板则 `docs/DECISION.md` 追加。
 4. `node .workflow/scripts/gate-all.mjs --commit-msg .git/commit-msg.txt` 全绿。
-5. `git add <具体路径>`（不用 `-A`）→ `git commit -F .git/commit-msg.txt` → `git push origin <分支>`。
+5. `git add <具体路径>`（不用 `-A`）→ `git commit -F .git/commit-msg.txt` → `git push -u origin <分支>`。
    **不直接推 `main`**：走 PR（通道 A，见 §5.1）；发版走 `release/vX.Y.Z` 分支（通道 B，见 §5.2）。
-6. `git log -1 --format=%B` 回读复核中文；合并后 `docs/RECORD.md` 补记版本号（补记提交本身不再单独登行）。
+6. 开 PR 与合并（`gh`，GitHub MCP 凭据失效不用）：
+   ```powershell
+   gh pr create --base main --head <分支> --title "<type>(<scope>): <摘要>" --body-file .github/pull_request_template.md
+   gh pr checks --watch
+   gh pr merge <编号> --merge --delete-branch
+   ```
+7. `git log -1 --format=%B` 回读复核中文；合并后 `docs/RECORD.md` **另起一条** `R-…` 补记哈希（台账只追加，不改旧条；纯补记提交不再登行）。
 
 ## 4 远端流水线（`.github/`）
 
@@ -65,8 +71,9 @@ node .workflow/scripts/install-hooks.mjs    # 复制到 .git/hooks/，只需在�
 
 1. 从 `main` 开分支：`feat/<主题>` / `fix/<主题>` / `docs/<主题>` / `chore/<主题>`。
 2. 按 §3 的 SOP 提交到该分支（门禁在本地 hook 与 PR 的 `ci` 双重校验）。
-3. 开 PR 到 `main`，**PR 标题必须写成 `type(scope): 摘要`**（squash 合并时它就是提交说明，`ci` 会校验）。
-4. 门禁绿 → merge。合并后 `ci` 在 `main` 上再跑一遍；**不打 tag、不发版**。
+3. 开 PR 到 `main`，**PR 标题必须写成 `type(scope): 摘要`**（squash 合并时它就是提交说明，`ci` 会校验）：
+   `gh pr create --base main --head <分支> --title ... --body-file .github/pull_request_template.md`
+4. 门禁绿（`gh pr checks --watch`）→ `gh pr merge <编号> --merge --delete-branch`。合并后 `ci` 在 `main` 上再跑一遍；**不打 tag、不发版**。
 
 ### 5.2 通道 B：发版（PR + merge + new tag + publish，全量）
 

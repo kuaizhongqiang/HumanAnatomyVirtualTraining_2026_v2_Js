@@ -16,7 +16,8 @@
 | 需求落账 | `requirement/raw/origin.md` 原件入库，口径转 `D-20261030-03`～`07` |
 | 四道门禁 | `gate-doc-paths` / `gate-commit-msg` / `gate-assets` / `gate-ledgers`，`gate-all` 总闸；正负向均已实跑 |
 | 本地 hook | `install-hooks.mjs` 装 `pre-commit` / `commit-msg`，与 CI 同源 |
-| CI | `.github/workflows/ci.yml`：门禁 ＋ 条件构建（PR 时还校验 PR 标题） |
+| CI | `.github/workflows/ci.yml`：门禁 ＋ 条件构建（PR 时还校验 PR 标题） | 已在 `main` 实跑两次成功（`41005680240`、`41006666261`，各 24s） |
+| PR 通道 | 用 `gh` 开 PR / 看 checks / 合并（GitHub MCP 凭据失效，不作为通道） | `AGENT.md` §5、`.workflow/README.md` §5.1 |
 | 发版通道 | `.github/workflows/release.yml`：`release/v*` PR 合并 → 校验版本 → 自动打 tag → 构建 → publish；`check-release-version.mjs` 已自测四种输入 |
 | 两条通道与 tag 规则 | `D-20261030-09`；tag 从 `v0.0.0` 起、严格递增、与 `package.json` 一致 |
 | 禁止直接提交 | `D-20261030-10`；`AGENT.md` §4 红线 ＋ 根 `README.md` 明写 |

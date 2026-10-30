@@ -26,9 +26,16 @@ description: This skill should be used when a task in this repository is finishe
    git commit -F .git/commit-msg.txt
    git push -u origin <分支>
    ```
-7. **开 PR**：标题即 `type(scope): 摘要`（squash 后就是提交说明，`ci` 会校验）；等门禁绿后由负责人 merge。
+7. **开 PR（用 `gh`，不用 GitHub MCP）**：
+   ```powershell
+   gh pr create --base main --head <分支> --title "<type>(<scope>): <摘要>" --body-file .github/pull_request_template.md
+   gh pr checks --watch                 # 等 ci 的 gates job 绿
+   gh pr merge <编号> --merge --delete-branch
+   ```
+   - 标题即 `type(scope): 摘要`（squash 合并时就是提交说明，`ci` 会校验）。
+   - **GitHub MCP 凭据无效**，一律走 `gh`（本机已登录 `kuaizhongqiang`）。
 8. **回读复核**：`git log -1 --format=%B`，确认中文未损坏；合并后把真实短哈希补进 `docs/RECORD.md` 的版本列。
-   - 哈希只能事后知道，故补记行单独提交一次；**纯台账补记提交不再为自己登行**（避免递归）。
+   - 哈希只能事后知道，故补记行**另起一条 `R-…`**（台账只追加，不改旧条）；**纯台账补记提交不再为自己登行**（避免递归）。
 
 ## 坑
 
