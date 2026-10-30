@@ -25,7 +25,7 @@
 | Agent 技能 | `.agent/skills/`：`repo-commit` / `gate-triage` / `anatomy-migrate` / `release` |
 | 文档齐备 | `docs/` 七份内容文档 ＋ 三份台账 ＋ 数据规模实算（`business.md` §3） |
 | 工程脚手架 | `vite` ＋ `ts`（strict）＋ `vitest` ＋ `eslint`；`build` / `typecheck` / `lint` / `test` 四项本地全绿 | `package.json`、`tsconfig.json`、`vite.config.ts` |
-| UI mockup | 外壳：顶栏（性别 / 语言 / 主题）、九系统树、视口占位、体素详情、悬浮 AI 对话；明暗双主题 ＋ 中英切换（`?theme=` 可直看） | `src/ui/`，截图见 PR |
+| UI mockup | 全幅场景 ＋ **悬浮毛玻璃面板**（顶栏 / 系统树 / 详情 / AI 对话）：`blur+saturate+brightness` 基底、跟随指针的镜面高光、多层 `inset` 内发光与 ±1px 色散；明暗双主题 ＋ 中英切换（`?theme=` 可直看） | `src/ui/shell.css`、`docs/architecture.md` §2.5 |
 | 数据采样 | 从上游抽取每系统 2 项、描述截断，含结构断言测试（3 例） | `src/data/sample/human-sample.json` |
 
 ## 2 未完成（指针）

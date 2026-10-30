@@ -58,7 +58,7 @@ export function mountShell(root: HTMLElement): void {
     const locale = getLocale();
     const theme = currentTheme();
     return `
-      <header class="topbar">
+      <header class="panel topbar">
         <div class="brand">
           <span class="brand-mark">解</span>
           <div class="brand-text">
@@ -111,7 +111,7 @@ export function mountShell(root: HTMLElement): void {
       .join('');
 
     return `
-      <aside class="sidebar">
+      <aside class="panel sidebar">
         <div class="panel-head">
           <h2>${esc(t('side.title'))}</h2>
           <span class="hint">${esc(t('side.hint'))}</span>
@@ -128,28 +128,24 @@ export function mountShell(root: HTMLElement): void {
       </aside>`;
   }
 
-  function renderStage(): string {
+  function renderScene(): string {
     return `
-      <section class="stage${state.split ? ' is-split' : ''}">
-        <div class="stage-tools">
-          <button class="tool" data-action="stage" data-value="rotate">${esc(t('stage.rotate'))}</button>
-          <button class="tool" data-action="stage" data-value="reset">${esc(t('stage.reset'))}</button>
-          <button class="tool" data-action="stage" data-value="focus">${esc(t('stage.focus'))}</button>
-          <button class="tool" data-action="stage" data-value="fullscreen">${esc(t('stage.fullscreen'))}</button>
-        </div>
-        <div class="stage-canvas" style="--opacity:${state.opacity / 100}">
-          <svg class="figure" viewBox="0 0 200 400" aria-hidden="true">
-            <circle cx="100" cy="50" r="26" />
-            <rect x="72" y="82" width="56" height="122" rx="18" />
-            <rect x="50" y="94" width="18" height="120" rx="9" />
-            <rect x="132" y="94" width="18" height="120" rx="9" />
-            <rect x="74" y="208" width="20" height="152" rx="10" />
-            <rect x="106" y="208" width="20" height="152" rx="10" />
-          </svg>
-          <div class="stage-badge">${esc(t('stage.badge'))}</div>
-          <p class="stage-hint">${esc(t('stage.hint'))}</p>
-        </div>
-      </section>`;
+      <div class="stage-tools">
+        <button class="tool" data-action="stage" data-value="rotate">${esc(t('stage.rotate'))}</button>
+        <button class="tool" data-action="stage" data-value="reset">${esc(t('stage.reset'))}</button>
+        <button class="tool" data-action="stage" data-value="focus">${esc(t('stage.focus'))}</button>
+        <button class="tool" data-action="stage" data-value="fullscreen">${esc(t('stage.fullscreen'))}</button>
+      </div>
+      <svg class="figure${state.split ? ' is-split' : ''}" viewBox="0 0 200 400" aria-hidden="true" style="--opacity:${state.opacity / 100}">
+        <circle cx="100" cy="50" r="26" />
+        <rect x="72" y="82" width="56" height="122" rx="18" />
+        <rect x="50" y="94" width="18" height="120" rx="9" />
+        <rect x="132" y="94" width="18" height="120" rx="9" />
+        <rect x="74" y="208" width="20" height="152" rx="10" />
+        <rect x="106" y="208" width="20" height="152" rx="10" />
+      </svg>
+      <div class="stage-badge">${esc(t('stage.badge'))}</div>
+      <p class="stage-hint">${esc(t('stage.hint'))}</p>`;
   }
 
   function renderDetail(): string {
@@ -157,7 +153,7 @@ export function mountShell(root: HTMLElement): void {
     const obj = state.selectedObjId ? findBodyObj(state.gender, state.selectedObjId) : undefined;
     if (!obj) {
       return `
-        <aside class="detail">
+        <aside class="panel detail">
           <div class="panel-head"><h2>${esc(t('detail.title'))}</h2></div>
           <p class="empty">${esc(t('detail.empty'))}</p>
         </aside>`;
@@ -165,7 +161,7 @@ export function mountShell(root: HTMLElement): void {
     const title = locale === 'zh' ? obj.name : obj.engName;
     const sub = locale === 'zh' ? obj.engName : obj.name;
     return `
-      <aside class="detail">
+      <aside class="panel detail">
         <div class="panel-head">
           <h2>${esc(t('detail.title'))}</h2>
           <span class="tag">${esc(obj.id)}</span>
@@ -188,7 +184,7 @@ export function mountShell(root: HTMLElement): void {
       return `<button class="chat-fab" data-action="chat-toggle" title="${esc(t('chat.title'))}">AI</button>`;
     }
     return `
-      <section class="chat">
+      <section class="panel chat">
         <div class="chat-head">
           <strong>${esc(t('chat.title'))}</strong>
           <button class="icon-btn" data-action="chat-toggle" title="close">–</button>
@@ -202,17 +198,17 @@ export function mountShell(root: HTMLElement): void {
   }
 
   function render(): void {
+    // 选中系统的配色作为全局光的染色，让毛玻璃面板出现"被场景照亮"的错觉
+    const tint = systemColor(state.selectedSystem);
     root.innerHTML = `
-      <div class="app">
+      <div class="app" style="--tint:${tint}">
+        <div class="scene">${renderScene()}</div>
         ${renderTopbar()}
-        <main class="main">
-          ${renderSidebar()}
-          ${renderStage()}
-          ${renderDetail()}
-          ${renderChat()}
-        </main>
-      </div>
-      <div class="toast" data-role="toast" hidden></div>`;
+        ${renderSidebar()}
+        ${renderDetail()}
+        ${renderChat()}
+        <div class="toast" data-role="toast" hidden></div>
+      </div>`;
   }
 
   function toast(text: string): void {
@@ -298,13 +294,22 @@ export function mountShell(root: HTMLElement): void {
     }
   });
 
+  // 镜面高光跟随指针：只改 CSS 变量，不触发重排
+  root.addEventListener('mousemove', (event) => {
+    const panel = (event.target as HTMLElement).closest<HTMLElement>('.panel');
+    if (!panel) return;
+    const rect = panel.getBoundingClientRect();
+    panel.style.setProperty('--light-x', `${((event.clientX - rect.left) / rect.width) * 100}%`);
+    panel.style.setProperty('--light-y', `${((event.clientY - rect.top) / rect.height) * 100}%`);
+  });
+
   root.addEventListener('input', (event) => {
     const target = event.target as HTMLElement;
     if (target.dataset.action !== 'opacity') return;
     state.opacity = Number((target as HTMLInputElement).value);
     // 拖动过程只改样式，不整树重绘（重绘会打断拖拽）
     target.closest('.range-row')?.querySelector('b')?.replaceChildren(`${state.opacity}%`);
-    root.querySelector<HTMLElement>('.stage-canvas')?.style.setProperty('--opacity', String(state.opacity / 100));
+    root.querySelector<HTMLElement>('.figure')?.style.setProperty('--opacity', String(state.opacity / 100));
   });
 
   root.addEventListener('submit', (event) => {

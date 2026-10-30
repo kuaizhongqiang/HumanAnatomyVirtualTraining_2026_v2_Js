@@ -12,6 +12,8 @@ Files:
 Exports: `mountShell(root)`；`t` / `setLocale` / `getLocale` / `systemNameInEnglish`；`applyTheme` / `toggleTheme` / `currentTheme` / `ensureTheme`。
 
 Notes:
-- **mockup 阶段**：`shell.ts` 里所有业务数据来自 `../data/mockData`，三维区域是 SVG 占位；接 three.js 时只替换 `renderStage()` 与拾取回调，不改外层结构。
+- **mockup 阶段**：`shell.ts` 里所有业务数据来自 `../data/mockData`，三维区域是 SVG 占位；接 three.js 时只替换 `renderScene()` 与拾取回调，不改外层结构。
+- **悬浮毛玻璃**：面板 = 全幅 `.scene` 之上的绝对定位 `.panel`；玻璃质感靠 `backdrop-filter: blur + saturate + brightness`、`::before` 镜面高光（`--light-x/y` 由 `mousemove` 写入）与多层 `inset` 内发光；选中系统的配色以 `--tint` 注入，作为场景染色与面板环境光。
 - 重绘策略是「整树重绘 + 根节点事件委托」，所以不要在外壳 DOM 上挂一次性监听；滑块拖动走局部更新（重绘会打断拖拽）。
+- 玻璃面越多越费 GPU（参考实现建议每视口 2–3 个），降级策略见 `docs/TODO.md` `T-17`；`@supports` 兜底与 `prefers-reduced-motion` 已在 `shell.css` 处理。
 - 文案一律走 `t()`，色值一律走 CSS 变量（`AGENT.md` §3 表现层两条硬口径）。
