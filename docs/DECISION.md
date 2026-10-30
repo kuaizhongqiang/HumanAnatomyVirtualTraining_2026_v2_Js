@@ -3,7 +3,7 @@
 读者：AI
 类型：拍板台账（只追加）
 权威：负责人已拍板口径的唯一台账；待拍板项在 `TODO.md` §4
-状态：2026-10-30 建立，记 7 条（01～02 为协作口径，03～07 由需求原件 `requirement/raw/origin.md` 落账）
+状态：2026-10-30 建立，记 8 条（01～02 为协作口径，03～07 由需求原件 `requirement/raw/origin.md` 落账，08 为流程目录与门禁口径）
 依赖：`AGENT.md` §1（唯一手册与文档分工）
 
 ## 1 写法
@@ -55,3 +55,9 @@
 决定：AI 对话功能**先按最简单方式实现**，后续再扩展（不照搬上游豆包＋DeepSeek 双模型 tool-call 全链路）。
 影响：`src/api` 与 `src/manager` 初期只保留单通道请求/响应与会话历史；工具调用、多轮 function call 留待扩展时再记 `D-…`。
 落地：`AGENT.md` §3（模块边界）、`src/api`（待建）。
+
+### D-20261030-08 流程目录分工与门禁口径
+
+决定：`.github/` 只管远端流水线与协作模板（CI / release / PR / issue / CODEOWNERS）；`.workflow/` 管本地流程、门禁脚本、hook 与模板；`.agent/` 管 agent 技能。门禁四道（路径文档 / 提交说明 / 资产 / 台账），判定逻辑只存在于 `.workflow/scripts/gate-*.mjs` 一份，本地 pre-commit 与 CI 调同一脚本。
+影响：新增或调整门禁必须同时改脚本与 `.workflow/README.md` 判定表；技能只写"怎么做"不复制判定表；`--no-verify` 与 CI `continue-on-error` 视同绕过，须负责人同意。
+落地：`AGENT.md` §3（门禁是硬闸）、§5；`.workflow/`、`.github/`、`.agent/`。

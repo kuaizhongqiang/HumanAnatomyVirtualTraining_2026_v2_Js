@@ -1,0 +1,6 @@
+#!/bin/sh
+# 提交前门禁：与 CI 共用同一入口 .workflow/scripts/gate-all.mjs
+node .workflow/scripts/gate-all.mjs || {
+  echo "[gate] 门禁未通过，提交已中止（绕过须先问负责人）" >&2
+  exit 1
+}

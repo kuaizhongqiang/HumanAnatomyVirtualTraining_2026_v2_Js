@@ -1,0 +1,45 @@
+name: 任务
+description: 一项待做功能或迁移工作（可对应 docs/TODO.md 的 T-n）
+title: '[task] '
+labels: ['task']
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: 目标
+      description: 一句话说清做完后能做什么
+    validations:
+      required: true
+  - type: input
+    id: todo_id
+    attributes:
+      label: 对应台账编号
+      description: docs/TODO.md 的 T-n（若尚无，先在台账里补，避免两处清单并行）
+      placeholder: T-7
+  - type: dropdown
+    id: scope
+    attributes:
+      label: 影响域
+      multiple: true
+      options:
+        - src/api
+        - src/data
+        - src/control
+        - src/obj
+        - src/camera
+        - src/ui
+        - src/manager
+        - 资产（模型 / 贴图 / 音频）
+        - 构建与发布
+  - type: textarea
+    id: done
+    attributes:
+      label: 完成判据
+      description: 可验收的判定，不写"优化一下"这类空话
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: 备注
+      description: 上游对照（`../HumanAnatomyVirtualTraining_2026_v1.1` 的文件）、风险、依赖

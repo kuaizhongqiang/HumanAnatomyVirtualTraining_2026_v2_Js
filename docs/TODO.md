@@ -3,7 +3,7 @@
 读者：AI
 类型：待办清单（唯一清单）
 权威：本工程「还没做 / 建议做」的唯一台账；已完成能力见 `progress.md`（未建），已拍板见 `DECISION.md`，已提交见 `RECORD.md`
-状态：2026-10-30 建立；同日按需求原件 `requirement/raw/origin.md` 清空 §4（原 `P-1`～`P-5` 全部拍板，见 `DECISION.md` `D-20261030-03`～`07`）并重排待办
+状态：2026-10-30 建立；同日按需求原件 `requirement/raw/origin.md` 清空 §4（原 `P-1`～`P-5` 全部拍板，见 `DECISION.md` `D-20261030-03`～`07`）并重排待办；同日流程基建落地（`.workflow/` `.github/` `.agent/`），删除已完成的原 `T-3`（`.gitignore`）、`T-4`（`.workflow/`），新增 `T-12`、`T-13`
 依赖：`AGENT.md`（纪律与索引）、`../HumanAnatomyVirtualTraining_2026_v1.1`（上游只读事实源）
 
 ## 1 写法
@@ -19,10 +19,10 @@
 |---|---|---|
 | T-1 | 按 `AGENT.md` §2 清单建 `docs/` 其余文档：`README.md`、`overview.md`、`structure.md`、`repo.md`、`architecture.md`、`business.md`、`progress.md` | 每份带五行头，只写自己那一层不复述 |
 | T-2 | 建构建 / 开发 / 检查 / 测试入口（`package.json`、`vite.config.ts`、`tsconfig.json`、lint、测试），落盘后回写 `AGENT.md` §5 | `D-20261030-03` |
-| T-3 | 建 `.gitignore` 忽略链：`node_modules/`、`dist/`、`release/`、`.vite/`、`*.log` | 与 `AGENT.md` §3「产物目录」一致 |
-| T-4 | 建 `.workflow/`：CI ＋ 打包（web ＋ electron）＋ 发布脚本与 `README.md` | `D-20261030-04`、`D-20261030-05` |
 | T-5 | 补 `README.md` 项目说明（当前仅一行标题） | 与 `docs/overview.md` 不重复 |
 | T-6 | 盘出上游 `StreamingAssets` 三份 JSON 的完整字段字典并落 `docs/business.md` | 现只有 `AGENT.md` §3 的口径摘要 |
+| T-12 | 确认 GitHub Actions 首次运行通过（`ci` 的 `gates` job 绿） | 需先推送 `.github/workflows/ci.yml` |
+| T-13 | 视需要在 `.codebuddy/skills/` 建自动发现入口（当前技能在 `.agent/skills/`，须显式指向） | `.agent/README.md` §3 |
 
 ## 3 开发待办（按域）
 

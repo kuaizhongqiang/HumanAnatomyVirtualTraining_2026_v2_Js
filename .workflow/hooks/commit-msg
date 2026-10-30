@@ -1,0 +1,6 @@
+#!/bin/sh
+# 提交说明门禁：type(scope): 摘要，UTF-8 无 BOM
+node .workflow/scripts/gate-commit-msg.mjs "$1" || {
+  echo "[gate] 提交说明不合规，格式见 .workflow/templates/commit-message.md" >&2
+  exit 1
+}

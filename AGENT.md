@@ -3,7 +3,7 @@
 读者：AI
 类型：纪律与索引
 权威：本工程唯一纪律手册（"做什么 / 不许做什么 / 去哪查"）；工程内容事实源在 `docs/`，业务与数据事实源在上游 Unity 工程 `../HumanAnatomyVirtualTraining_2026_v1.1`（只读）
-状态：2026-10-30 建立，同日完成**仓库检出**与**需求落账**：远端 `github.com/kuaizhongqiang/HumanAnatomyVirtualTraining_2026_v2_Js`（`main` 跟踪 `origin/main`）；技术栈、交付形态、仓库协作、迁移口径、AI 实现路径已拍板（`docs/DECISION.md` `D-20261030-03`～`07`）；`docs/` 只有三份台账与需求原件，其余内容文档未建；尚无源码与构建入口。同日修订 §3：文档单位定为「**一目录一份 `README.md`**（路径契约）」
+状态：2026-10-30 建立，同日完成**仓库检出**、**需求落账**与**流程基建**：远端 `github.com/kuaizhongqiang/HumanAnatomyVirtualTraining_2026_v2_Js`（`main` 跟踪 `origin/main`）；技术栈、交付形态、仓库协作、迁移口径、AI 实现路径已拍板（`docs/DECISION.md` `D-20261030-03`～`07`）；已建 `.workflow/`（四道门禁 ＋ SOP ＋ 发布）、`.github/`（CI / release / 协作模板）、`.agent/`（4 个技能）；`docs/` 仍只有三份台账与需求原件，其余内容文档未建；尚无源码与构建入口。同日修订 §3：文档单位定为「**一目录一份 `README.md`**（路径契约）」
 依赖：`docs/README.md`（未建）、上游 `Assets/StreamingAssets/ConfigData.json`＋`HumanBodyData.json`（数据契约真源）、纪律范式参照 `F:\Project\VRFInstallationCommissioningTrainingSimulation\trunk\AGENT.md`
 
 本文件只写**纪律与索引**。工程是什么、目录怎么排、仓库怎么管、框架怎么转、业务怎么分、还欠什么——一律查 `docs/`；本文件不复述，文档与代码冲突时以代码为准（见 §1）。
@@ -39,7 +39,11 @@
 | 提交台账（只追加） | `docs/RECORD.md` |
 | **需求原件（只读输入）** | `docs/requirement/raw/origin.md`（技术栈、仓库组织、功能与发布口径的原始出处；只读，不在此处改口径） |
 | 仓库首页 | `README.md` |
-| CI / 打包 / 发布流程（未建） | `.workflow/README.md` |
+| **流程、门禁与发布细则** | `.workflow/README.md`（四道门禁判定表、任务 SOP、发布流程） |
+| 门禁实现（唯一判定） | `.workflow/scripts/gate-*.mjs`、`install-hooks.mjs`、`hooks/` |
+| 提交说明模板 | `.workflow/templates/commit-message.md` |
+| 远端流水线与协作模板 | `.github/workflows/ci.yml`、`.github/workflows/release.yml`、`.github/pull_request_template.md`、`.github/ISSUE_TEMPLATE/`、`.github/CODEOWNERS` |
+| Agent 技能 | `.agent/README.md` → `.agent/skills/<name>/SKILL.md`（`repo-commit` / `gate-triage` / `anatomy-migrate` / `release`） |
 | **上游 Unity 工程（只读事实源）** | `../HumanAnatomyVirtualTraining_2026_v1.1`（Unity 2022.3.53f1c1 / URP 14.0.11；场景 `0_Setup` `1_Start` `2_Content` `Preview`） |
 | 上游脚本与域划分（迁移对照） | `../HumanAnatomyVirtualTraining_2026_v1.1/Assets/Script`（`Api` / `Data` / `Control` / `InteractiveObj` / `UI` / `Manager` / `CamControl`） |
 | **数据契约真源** | `../HumanAnatomyVirtualTraining_2026_v1.1/Assets/StreamingAssets/`：`ConfigData.json`、`HumanBodyData.json`、`HumanBodyData_Female.json` |
@@ -78,6 +82,7 @@
 - **禁改**：`node_modules/`、`dist/`、`.cache/` 等依赖与生成物；上游工程全部内容（`Library/` `Temp/` `Logs/` `obj/` `*.csproj` `*.sln` `*.meta` `ProjectSettings/` 一律不碰、不复制）。
 - **产物目录只有两个**：`dist/`（web 构建产物）与 `release/`（electron 安装包），均由脚本生成、一律入忽略链、不入库；禁自造 `build/`、`out/` 之类第二套产物目录（历史教训：上游 Plastic 忽略规则无前导斜杠、任意深度匹配，`Build/` 会被静默排除，故沿用"不叫 build"的口径；忽略链细则见 `docs/repo.md`）。
 - **资产**：**无大资产门禁**——模型 / 贴图 / 视频 / 音频照原样提交，不设单文件体积上限；原始工程文件（`.blend` / `.max` / `.psd` 等源工程）不入库。业务素材统一入资产根，不得散落到 `src/` 或构建产物目录。
+- **门禁是硬闸**：提交前 `node .workflow/scripts/gate-all.mjs --commit-msg <说明文件>` 必须全绿；本地 hook 与 CI 调**同一脚本**，判定只写一份。新增门禁 = 在 `.workflow/scripts/` 加一个 `gate-*.mjs` ＋ 在 `.workflow/README.md` 判定表登记，两处同批。`--no-verify`、CI 里 `continue-on-error` 视同绕过门禁，须先经负责人同意并在提交说明写明原因。
 - **MCP 是单实例资源**：agentmemory、上游 Unity MCP、CDP 浏览器同一时刻只允许一个 agent 使用；用前申请、用完即放，纯读操作同样排队，禁并发。
 - **禁止**：删改他人未提交/未确认的改动；用 `--forced` / `--override` / `-y` 覆盖远端；在未提交状态下切分支或拉取；把中文直接写进命令行参数（说明文字一律走 UTF-8 文件）。
 
@@ -89,22 +94,33 @@
 - 提交后必须**回读原始字节复核**：`git log -1 --format=%B`（按 UTF-8 解码比对）；**控制台回显不可信**（本机 ACP=936 会把正确中文显示成乱码）。
 - 分支模型：唯一长期分支 `main`，跟踪 `origin/main`；禁止对其 force push、禁止跳钩子。需要并行时开 `feat/…` 分支，合并细则归 `.workflow/`。
 - 拉取与推送：提交前 `git pull --rebase origin main`，`status` 必须干净；禁止在未提交状态下切分支或拉取；推送用 `git push origin main`，失败先 rebase 再推。
+- 克隆或换机后先装门禁 hook：`node .workflow/scripts/install-hooks.mjs`（`.git/hooks/` 不入库，每份工作副本装一次）。
 
 ## 5 常用命令
 
-**仓库（已可用）**
+**仓库与门禁（已可用）**
 
 ```powershell
-git status                          # 提交前必须清点
-git pull --rebase origin main        # 拉取；有未提交改动先提交或 stash
-git add <具体路径>                    # 只加本次逻辑变更涉及的文件，禁 git add -A
-git commit -F .git/commit-msg.txt    # 中文说明走 UTF-8 无 BOM 文件
+node .workflow/scripts/install-hooks.mjs                       # 克隆后装一次 pre-commit / commit-msg
+node .workflow/scripts/gate-all.mjs                            # 全门禁：路径文档 / 资产 / 台账
+node .workflow/scripts/gate-all.mjs --commit-msg .git/commit-msg.txt   # 提交前连说明一起校验
+git status                                                     # 提交前必须清点
+git pull --rebase origin main                                  # 拉取；有未提交改动先提交或 stash
+git add <具体路径>                                              # 只加本次逻辑变更涉及的文件，禁 git add -A
+git commit -F .git/commit-msg.txt                               # 中文说明走 UTF-8 无 BOM 文件
 git push origin main
-git log -1 --format=%B               # 提交后回读复核
+git log -1 --format=%B                                          # 提交后回读复核
+```
+
+**发布**
+
+```powershell
+git tag -a v0.1.0 -m "v0.1.0"    # 触发 .github/workflows/release.yml（web dist + Windows 安装包）
+git push origin v0.1.0
 ```
 
 **工程（尚不可用）**
 
 构建 / 开发 / 检查 / 测试入口未建（无 `package.json`、无 `vite.config.ts`），禁止臆造命令；入口落盘后本节随同一次提交补齐（见 `docs/TODO.md` `T-2`）。
 
-**自查**：§3 的「路径 ↔ 目录 `README.md`」配对检查（PowerShell，应无输出）。
+**自查**：§3 的「路径 ↔ 目录 `README.md`」配对检查已并入 `gate-doc-paths`（`node .workflow/scripts/gate-doc-paths.mjs`）。

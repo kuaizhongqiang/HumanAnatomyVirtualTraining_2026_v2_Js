@@ -1,0 +1,43 @@
+name: 缺陷
+description: 功能与预期不符（渲染、交互、数据、构建、发布）
+title: '[bug] '
+labels: ['bug']
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 现象
+      description: 实际看到什么，预期是什么
+      placeholder: 点击「肌系统」后高亮未出现，控制台报 xxx
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开 2_Content 对应页面
+        2. 点击 …
+        3. 观察 …
+    validations:
+      required: true
+  - type: dropdown
+    id: env
+    attributes:
+      label: 运行环境
+      options:
+        - web（浏览器）
+        - desktop（electron）
+        - CI / 构建
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 版本 / 提交
+      description: tag 或 commit 短哈希
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充
+      description: 报错栈、截图、相关路径（`src/…`）
