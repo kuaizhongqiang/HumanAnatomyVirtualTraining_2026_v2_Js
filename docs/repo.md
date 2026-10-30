@@ -11,7 +11,7 @@
 | 项 | 值 |
 |---|---|
 | 远端 | `https://github.com/kuaizhongqiang/HumanAnatomyVirtualTraining_2026_v2_Js.git`（`origin`） |
-| 可见性 | **private**（未鉴权的 GitHub API 会返回 404，不代表仓库或 Actions 不存在） |
+| 可见性 | **public**（2026-10-30 由 private 转 public，为开启分支保护；转 public 前未鉴权 API 返回 404，不代表仓库或 Actions 不存在） |
 | 长期分支 | `main`（跟踪 `origin/main`） |
 | 提交身份 | `kuaizhongqiang <kuaizhongqiang@users.noreply.github.com>` |
 | 换行 | `core.autocrlf=true`（工作副本 CRLF，库内 LF） |
@@ -22,7 +22,12 @@
 - **禁止直接提交到 `main`**：一切改动走「主题分支 → PR → merge」（`AGENT.md` §4、`D-20261030-10`）。
 - 通道 A（普通）：`feat/` `fix/` `docs/` `chore/` 分支 → PR → merge，不出 tag。
 - 通道 B（发版）：`release/vX.Y.Z` → PR → merge，合并触发流水线打 tag 并 publish。
-- 分支保护（要求 PR、要求 `ci` 通过、禁 force push）**尚未开启**。实测 `gh api -X PUT .../branches/main/protection` 返回 **403**：private 仓库需 GitHub **Pro** 或转 public 才能启用（`TODO.md` `T-14`）。解锁后一条命令即可，配置要点：`required_status_checks.contexts = ["门禁","构建"]`、`allow_force_pushes=false`、`required_approving_review_count=0`（要求 PR 但不要求人工审批）。
+- **分支保护已开启**（2026-10-30，仓库转 public 后生效）：`main` 只接受 PR 合入、必须过 `门禁`＋`构建` 两个检查且分支需与 `main` 同步（`strict`）、禁 force push、禁删除分支、审批数 0（要求 PR 但不要求人工审批）、`enforce_admins=false`（负责人可紧急绕过）。
+- 配置即代码：`.workflow/branch-protection.json`；应用/重放：
+  ```powershell
+  gh api -X PUT --input .workflow/branch-protection.json repos/kuaizhongqiang/HumanAnatomyVirtualTraining_2026_v2_Js/branches/main/protection
+  ```
+- 历史坑：private 仓库下该接口返回 **403**「Upgrade to GitHub Pro or make this repository public」。
 
 ## 3 tag 规则（结论）
 

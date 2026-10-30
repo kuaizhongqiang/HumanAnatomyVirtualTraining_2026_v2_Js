@@ -96,7 +96,7 @@ node .workflow/scripts/install-hooks.mjs    # 复制到 .git/hooks/，只需在�
 | 来源 | 只由流水线创建；人手打 tag 仅在补发时用 `--allow-existing` 场景 |
 | 一致性 | `package.json` 的 `version` 必须等于 tag 去掉 `v` 的部分 |
 
-> 分支保护（`main` 只接受 PR、必须过 `ci`）属于 GitHub 仓库设置，不在代码里，见 `docs/TODO.md` `T-14`。
+> 分支保护**已开启**（2026-10-30）：`main` 只接受 PR、必须过 `门禁`＋`构建`、禁 force push。配置即代码在 `.workflow/branch-protection.json`，应用/重放命令见 `docs/repo.md` §2。
 
 ## 6 技能索引
 
