@@ -3,7 +3,7 @@
 读者：AI
 类型：纪律与索引
 权威：本工程唯一纪律手册（"做什么 / 不许做什么 / 去哪查"）；工程内容事实源在 `docs/`，业务与数据事实源在上游 Unity 工程 `../HumanAnatomyVirtualTraining_2026_v1.1`（只读）
-状态：2026-10-30 建立，同日完成**仓库检出**、**需求落账**与**流程基建**：远端 `github.com/kuaizhongqiang/HumanAnatomyVirtualTraining_2026_v2_Js`（`main` 跟踪 `origin/main`）；技术栈、交付形态、仓库协作、迁移口径、AI 实现路径已拍板（`docs/DECISION.md` `D-20261030-03`～`07`）；已建 `.workflow/`（四道门禁 ＋ SOP ＋ 发布）、`.github/`（CI / release / 协作模板）、`.agent/`（4 个技能）；`docs/` 仍只有三份台账与需求原件，其余内容文档未建；尚无源码与构建入口。同日修订 §3：文档单位定为「**一目录一份 `README.md`**（路径契约）」
+状态：2026-10-30 建立，同日完成**仓库检出**、**需求落账**、**流程基建**、**七份内容文档**与**工程脚手架 ＋ UI mockup**：远端 `github.com/kuaizhongqiang/HumanAnatomyVirtualTraining_2026_v2_Js`（`main` 跟踪 `origin/main`，已开分支保护）；技术栈与协作口径见 `docs/DECISION.md` `D-20261030-03`～`10`；`.workflow/`（四道门禁 ＋ SOP ＋ 发布）、`.github/`（CI / release / 协作模板）、`.agent/`（4 个技能）就绪；`src/` 已有 `data`（类型 ＋ 采样）与 `ui`（外壳 ＋ 明暗主题 ＋ 中英双语），三维视口仍为 SVG 占位。同日修订 §3：文档单位定为「**一目录一份 `README.md`**（路径契约）」
 依赖：`docs/README.md`（未建）、上游 `Assets/StreamingAssets/ConfigData.json`＋`HumanBodyData.json`（数据契约真源）、纪律范式参照 `F:\Project\VRFInstallationCommissioningTrainingSimulation\trunk\AGENT.md`
 
 本文件只写**纪律与索引**。工程是什么、目录怎么排、仓库怎么管、框架怎么转、业务怎么分、还欠什么——一律查 `docs/`；本文件不复述，文档与代码冲突时以代码为准（见 §1）。
@@ -137,8 +137,18 @@ node .workflow/scripts/check-release-version.mjs v0.0.0   # 本地预检：格�
 git push -u origin release/v0.0.0     # PR 合并后 release.yml 自动打 tag + 构建 + publish
 ```
 
-**工程（尚不可用）**
+**工程（已可用）**
 
-构建 / 开发 / 检查 / 测试入口未建（无 `package.json`、无 `vite.config.ts`），禁止臆造命令；入口落盘后本节随同一次提交补齐（见 `docs/TODO.md` `T-2`）。
+```powershell
+npm install                        # 首次
+npm run dev                        # 开发服务器 http://localhost:5173
+npm run build                      # tsc --noEmit && vite build → dist/
+npm run typecheck                  # 仅类型检查
+npm run lint                       # eslint .
+npm test                           # vitest run；单文件：npx vitest run src/ui/i18n.test.ts
+npm run preview                    # 预览 dist/
+```
 
-**自查**：§3 的「路径 ↔ 目录 `README.md`」配对检查已并入 `gate-doc-paths`（`node .workflow/scripts/gate-doc-paths.mjs`）。
+UI 评审：`/?theme=dark` 或 `/?theme=light` 直接看对应主题（不落盘），无参数时按 localStorage / 系统偏好。
+
+**自查**：§3 的「路径 ↔ 目录 `README.md`」配对检查已并入 `gate-doc-paths`。

@@ -17,20 +17,22 @@
 | `.workflow/` | 流程与门禁：`scripts/`（判定）、`hooks/`（包装）、`templates/`、`README.md`（细则） |
 | `.github/` | `workflows/{ci,release}.yml`、PR/Issue 模板、`CODEOWNERS` |
 | `.agent/` | 技能索引与 `skills/<name>/SKILL.md` |
-| `src/` | **待建**：业务源码（本文件 §2 为约定布局） |
+| `src/` | 业务源码：已落地 `main.ts`、`style.css`（全局 token）与 `data`、`ui` 两域；其余五域待迁移（§2） |
+| `package.json` / `tsconfig.json` / `vite.config.ts` / `vitest.config.ts` / `eslint.config.js` / `index.html` | 工程脚手架与入口 |
+| `src/data/sample/human-sample.json` | **采样数据**：上游每系统取 2 项、描述截断；完整数据待 `TODO.md` `P-6` |
 | `dist/` `release/` | **生成物**：web 产物 / 桌面安装包，不入库 |
 
-## 2 `src/` 目标布局（与上游七域一一对应）
+## 2 `src/` 布局（与上游七域一一对应；✅ 已有，其余待迁移）
 
-| 目录 | 职责 | 上游来源 |
-|---|---|---|
-| `src/api` | 模型服务调用、响应解析、会话历史 | `Assets/Script/Api` |
-| `src/data` | 数据契约类型、加载、校验、近似搜索 | `Assets/Script/Data` |
-| `src/control` | 人体整体状态（拆分 / 透明度 / 显隐） | `Assets/Script/BodyControl` |
-| `src/obj` | 体素与系统对象、拾取、高亮、交互回调 | `Assets/Script/InteractiveObj` |
-| `src/camera` | 轨道 / 聚焦 / 背景 | `Assets/Script/CamControl` |
-| `src/ui` | 画布与面板基类、各面板、主题 token、双语字典 | `Assets/Script/UI` |
-| `src/manager` | 全局编排：数据、交互、相机、AI | `Assets/Script/Manager`＋`Setup.cs` |
+| 目录 | 职责 | 上游来源 | 状态 |
+|---|---|---|---|
+| `src/api` | 模型服务调用、响应解析、会话历史 | `Assets/Script/Api` | 待建（`T-11`） |
+| `src/data` | 数据契约类型、加载、校验、近似搜索 | `Assets/Script/Data` | ✅ 类型 ＋ 采样数据 |
+| `src/control` | 人体整体状态（拆分 / 透明度 / 显隐） | `Assets/Script/BodyControl` | 待建（`T-7`） |
+| `src/obj` | 体素与系统对象、拾取、高亮、交互回调 | `Assets/Script/InteractiveObj` | 待建（`T-7`） |
+| `src/camera` | 轨道 / 聚焦 / 背景 | `Assets/Script/CamControl` | 待建（`T-7`） |
+| `src/ui` | 外壳、面板、主题 token、双语字典 | `Assets/Script/UI` | ✅ mockup 外壳 ＋ i18n/theme |
+| `src/manager` | 全局编排：数据、交互、相机、AI | `Assets/Script/Manager`＋`Setup.cs` | 待建（`T-7`） |
 
 - 依赖方向单向：`ui → manager → control / obj / camera / data → api`（`AGENT.md` §3）。
 - 每个含源码的目录必须有 `README.md` 作路径契约，首行 `# Contract: src/<相对路径>`；`gate-doc-paths` 强制。

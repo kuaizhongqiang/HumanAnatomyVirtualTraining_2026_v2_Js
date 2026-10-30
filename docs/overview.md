@@ -44,10 +44,10 @@
 | 阶段 | 内容 | 判据 |
 |---|---|---|
 | M0 基建 | 手册、台账、门禁、CI、发版通道 | 已完成（见 `progress.md`） |
-| M1 脚手架 | `package.json` / `vite` / `ts` / lint / 测试入口 | `TODO.md` `T-2` |
-| M2 数据层 | `src/data`：契约类型、加载、近似搜索 | `TODO.md` `T-6`、`T-7` |
-| M3 渲染与交互 | GLB 资产、相机、点选高亮、拆分/透明度状态 | `TODO.md` `T-7`、`T-8` |
-| M4 UI 与双语 | 面板栈、明暗 token、双语字典 | `TODO.md` `T-9`、`T-10` |
+| M1 脚手架 | `package.json` / `vite` / `ts` / lint / 测试入口 | 已完成（typecheck / lint / test / build 全绿） |
+| M2 数据层 | `src/data`：契约类型、加载、近似搜索 | 类型与采样已就绪；完整数据待 `P-6`，加载层待 `T-7` |
+| M3 渲染与交互 | GLB 资产、相机、点选高亮、拆分/透明度状态 | `TODO.md` `T-7`、`T-8`、`T-15` |
+| M4 UI 与双语 | 面板栈、明暗 token、双语字典 | mockup 完成（外壳 ＋ 双主题 ＋ 中英切换）；真实数据接入见 `T-9` |
 | M5 AI | 单通道对话与会话历史 | `TODO.md` `T-11` |
 | M6 发版 | `release/v0.0.0` 通道跑通 | `TODO.md` `T-12`、`repo.md` §4 |
 
