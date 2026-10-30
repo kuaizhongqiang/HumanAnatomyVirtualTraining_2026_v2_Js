@@ -1,0 +1,143 @@
+/* 第 0 层：设计令牌（Design Tokens）
+   规则：只有这里允许写颜色/尺寸/阴影/时长的字面量；其余样式一律引用 var(--*)。
+   主题切换 = 换 :root[data-theme] 这一组值，组件不需要知道明暗。 */
+
+:root {
+  /* —— 字号 / 行高 / 字重 —— */
+  --font-sans: 'Segoe UI', 'Microsoft YaHei', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-20: 20px;
+  --fs-28: 28px;
+  --lh-tight: 1.25;
+  --lh-base: 1.55;
+  --lh-loose: 1.7;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* —— 间距（4 的倍数）—— */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* —— 圆角 —— */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* —— 动效 —— */
+  --dur-fast: 120ms;
+  --dur-base: 220ms;
+  --dur-slow: 360ms;
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* —— 层级 —— */
+  --z-scene: 0;
+  --z-scene-ui: 1;
+  --z-panel: 2;
+  --z-float: 3;
+  --z-toast: 20;
+  --z-overlay: 30;
+
+  /* —— 布局骨架 —— */
+  --pad: 16px;
+  --topbar-h: 56px;
+  --sidebar-w: 288px;
+  --detail-w: 360px;
+
+  /* —— 玻璃 / 光照（两套主题只换数值）—— */
+  --glass-blur: 22px;
+  --glass-sat: 175%;
+  --glass-brightness: 1.08;
+}
+
+/* 用 [data-theme] 而非 :root[data-theme]，好处：设计样张页可在一张页面里并列明暗两帧 */
+[data-theme='light'] {
+  /* 基础色 */
+  --c-bg: #e9f1fb;
+  --c-bg-deep: #ccdcf0;
+  --c-surface: #ffffff;
+  --c-text-1: #16202d;
+  --c-text-2: #5b6d82;
+  --c-text-3: #8b9aab;
+  --c-line: #dbe4ee;
+  --c-brand: #1f7ae0;
+  --c-brand-ink: #ffffff;
+  --c-brand-soft: #e7f1fd;
+  --c-danger: #d9544a;
+
+  /* 玻璃层 */
+  --glass: rgb(255 255 255 / 40%);
+  --glass-strong: rgb(255 255 255 / 68%);
+  --glass-border: rgb(255 255 255 / 60%);
+  --glass-sheen: rgb(255 255 255 / 22%);
+  --specular: rgb(255 255 255 / 30%);
+  --chroma-a: rgb(255 120 120 / 14%);
+  --chroma-b: rgb(110 160 255 / 14%);
+  --edge-dark: rgb(0 0 0 / 10%);
+
+  /* 阴影（外投影）与内发光（受光/环境反弹）*/
+  --shadow-1: 0 18px 42px -20px rgb(15 32 56 / 28%), 0 3px 10px rgb(15 32 56 / 8%);
+  --shadow-2: 0 30px 72px -26px rgb(15 32 56 / 36%), 0 6px 16px rgb(15 32 56 / 10%);
+  --shadow-3: 0 40px 90px -30px rgb(15 32 56 / 42%);
+  --inner-glow: inset 0 1px 0 rgb(255 255 255 / 85%), inset 0 -58px 74px -58px rgb(31 122 224 / 30%);
+
+  /* 场景光 */
+  --glow-a: rgb(42 124 255 / 55%);
+  --glow-b: rgb(255 158 74 / 38%);
+  --scene-grid: rgb(31 122 224 / 11%);
+  --scene-bg: linear-gradient(180deg, var(--c-bg) 0%, var(--c-bg-deep) 100%);
+
+  /* 进度条/滑条 */
+  --track: rgb(22 32 45 / 10%);
+}
+
+[data-theme='dark'] {
+  --c-bg: #0c1420;
+  --c-bg-deep: #070d15;
+  --c-surface: #131f2d;
+  --c-text-1: #e7eef8;
+  --c-text-2: #9cb0c6;
+  --c-text-3: #71869d;
+  --c-line: #26384c;
+  --c-brand: #3f9bf0;
+  --c-brand-ink: #06101c;
+  --c-brand-soft: #17334d;
+  --c-danger: #ef6a5f;
+
+  --glass: rgb(17 29 43 / 58%);
+  --glass-strong: rgb(20 34 50 / 80%);
+  --glass-border: rgb(126 178 232 / 20%);
+  --glass-sheen: rgb(180 220 255 / 10%);
+  --specular: rgb(200 230 255 / 22%);
+  --chroma-a: rgb(255 120 120 / 12%);
+  --chroma-b: rgb(110 160 255 / 14%);
+  --edge-dark: rgb(0 0 0 / 28%);
+
+  --shadow-1: 0 18px 44px -18px rgb(0 0 0 / 62%), 0 2px 10px rgb(0 0 0 / 40%);
+  --shadow-2: 0 32px 80px -26px rgb(0 0 0 / 78%);
+  --shadow-3: 0 44px 100px -30px rgb(0 0 0 / 85%);
+  --inner-glow: inset 0 1px 0 rgb(170 210 245 / 18%), inset 0 -64px 84px -64px rgb(63 155 240 / 42%);
+
+  --glow-a: rgb(63 155 240 / 32%);
+  --glow-b: rgb(106 220 196 / 20%);
+  --scene-grid: rgb(63 155 240 / 12%);
+  --scene-bg: linear-gradient(180deg, #101d2b 0%, #0a121c 100%);
+
+  --track: rgb(255 255 255 / 12%);
+  --glass-brightness: 1.03;
+}

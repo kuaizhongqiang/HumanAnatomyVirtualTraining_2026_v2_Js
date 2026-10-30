@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>界面样张 · 人体解剖学知识仿真实训软件 v2</title>
+    <link rel="stylesheet" href="design.css" />
+  </head>
+  <body>
+    <header class="ds-head">
+      <div>
+        <h1>界面样张（1920 × 1080）</h1>
+        <p>§1 三屏合屏 · §2 八个面板逐节解剖（特写 + 状态矩阵 + 口径） · §3 面板 × class 覆盖矩阵 · <code>?shot=&lt;id&gt;</code> 出单幕</p>
+      </div>
+      <div class="ds-head__right">
+        <a class="ds-btn" href="tokens.html">← 设计令牌</a>
+        <button class="ds-btn" id="theme-btn">切换页面主题</button>
+      </div>
+    </header>
+
+    <main class="ds-main" id="frames"></main>
+
+    <script>
+      (function () {
+        var KEY = 'anatomy.design.theme';
+        var q = new URLSearchParams(location.search);
+        var pageTheme = q.get('theme') === 'light' ? 'light' : q.get('theme') === 'dark' ? 'dark' : localStorage.getItem(KEY) || 'dark';
+        document.documentElement.setAttribute('data-theme', pageTheme);
+        document.getElementById('theme-btn').addEventListener('click', function () {
+          pageTheme = pageTheme === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', pageTheme);
+          localStorage.setItem(KEY, pageTheme);
+        });
+
+        /* ---------- 文案（与 src/ui/i18n.ts 对齐；样张自带一份以便离线打开） ---------- */
+        var T = {
+          zh: {
+            title: '人体解剖学知识仿真实训软件',
+            subtitle: 'HUMAN ANATOMY KNOWLEDGE SIMULATION TRAINING SOFTWARE',
+            male: '男', female: '女', gender: '性别', enter: '进入实训', trial: '试用版',
+            version: '版本 0.0.0', footer: 'UI mockup · 采样数据（非最终内容）',
+            loadingTitle: '正在载入', stage: '准备 人体模型…', cancel: '取消',
+            steps: ['解剖数据', '人体模型', '材质与贴图', '界面资源'],
+            systems: '解剖系统', hint: '点击系统展开体素',
+            opacity: '透明度', split: '拆分 / 合并',
+            detailTitle: '体素详情', morphology: '形态', position: '位置', function: '功能',
+            ask: '就这个部位问 AI', empty: '左侧选择一个体素查看详情',
+            chat: 'AI 助手', greet: '你好，可以问我某个器官的位置、形态或功能。',
+            placeholder: '输入问题…', send: '发送', chatReply: '（AI 尚未接入）这里将来返回模型回答，上下文会带上当前选中的体素。',
+            badge: '3D 视口 · three.js 待接入',
+            stageHint: '此区域将由 three.js 渲染人体模型，当前为 UI 占位',
+            tools: ['旋转', '复位', '聚焦', '全屏'],
+            back: '返回开始页', close: '收起', theme: '主题', lang: '语言',
+            splitToast: '拆分 · mockup', mergeToast: '合并 · mockup',
+            startTips: '点击屏幕任意位置跳过视频...',
+            loadingTips: ['在左侧选择解剖系统，点击体素可查看形态、位置与功能'],
+          },
+          en: {
+            title: 'Human Anatomy Knowledge Simulation Training',
+            subtitle: '人体解剖学知识仿真实训软件',
+            male: 'Male', female: 'Female', gender: 'Sex', enter: 'Enter', trial: 'Trial',
+            version: 'Version 0.0.0', footer: 'UI mockup · sampled data (not final content)',
+            loadingTitle: 'Loading', stage: 'Preparing Body models…', cancel: 'Cancel',
+            steps: ['Anatomy data', 'Body models', 'Materials & textures', 'Interface assets'],
+            systems: 'Systems', hint: 'Click a system to expand its parts',
+            opacity: 'Opacity', split: 'Explode / Merge',
+            detailTitle: 'Part detail', morphology: 'Morphology', position: 'Position', function: 'Function',
+            ask: 'Ask AI about this part', empty: 'Select a part on the left',
+            chat: 'AI assistant', greet: 'Hi. Ask me about the position, morphology or function of a part.',
+            placeholder: 'Type a question…', send: 'Send', chatReply: '(AI not wired yet) The model answer appears here, with the selected part as context.',
+            badge: '3D viewport · three.js pending',
+            stageHint: 'three.js will render the body here; this area is a UI placeholder',
+            tools: ['Orbit', 'Reset', 'Focus', 'Fullscreen'],
+            back: 'Back to start', close: 'Collapse', theme: 'Theme', lang: 'Language',
+            splitToast: 'Explode · mockup', mergeToast: 'Merge · mockup',
+            startTips: 'Click anywhere to skip the intro video...',
+            loadingTips: ['Pick an anatomy system on the left; click a part to read its morphology, position and function'],
+          },
+        };
+
+        var SYSTEMS = [
+          ['MuscularSystem', '肌（运动）系统', 'Muscular', 141, '#d9736b'],
+          ['SkeletalSystem', '骨骼系统', 'Skeletal', 27, '#c9b189'],
+          ['CirculatorySystem', '循环系统', 'Circulatory', 3, '#d4566a'],
+          ['RespiratorySystem', '呼吸系统', 'Respiratory', 6, '#6aa9d8'],
+          ['DigestiveSystem', '消化系统', 'Digestive', 13, '#d7a45b'],
+          ['LymphaticSystem', '淋巴系统', 'Lymphatic', 4, '#8fbf8a'],
+          ['NervousSystem', '神经系统', 'Nervous', 6, '#b08ad6'],
+          ['ReproductiveSystem', '生殖系统', 'Reproductive', 1, '#dd8fb4'],
+          ['UrinarySystem', '泌尿系统', 'Urinary', 5, '#79b6b0'],
+        ];
+
+        var OBJ = {
+          id: 'Muscular_Zygomaticus_Minor',
+          zh: '颧小肌',
+          en: 'Zygomaticus Minor',
+          morphology: '属于面部薄束横纹肌，呈细长条索状，起自颧骨，纤维向下走行汇入口角周围的口轮匝肌。',
+          posDesc: '位于颧骨前下方，口角外上方的面部皮下组织内',
+          function: '牵拉口角向外上方，辅助提升上唇，参与表达微笑、大笑等面部表情。',
+        };
+
+        /* ---------- 基础片段 ---------- */
+        function seg(items, active) {
+          return '<div class="seg">' + items.map(function (it) {
+            return '<button class="seg__item' + (it[1] === active ? ' seg__item--active' : '') + '">' + it[0] + '</button>';
+          }).join('') + '</div>';
+        }
+        function scene() { return '<div class="scene"></div>'; }
+        function relStyle(rel) { return rel ? ' style="' + rel + '"' : ''; }
+
+        /* ---------- 组件（mode=screen 用绝对定位；mode=closeup 用内联相对定位） ---------- */
+        function stagePart(o) {
+          return '<div class="stage">' +
+            '<svg class="figure' + (o.split ? ' figure--split' : '') + '" viewBox="0 0 200 400" style="--opacity:' + (o.opacity || 100) / 100 + '">' +
+            '<circle cx="100" cy="50" r="26"/><rect x="72" y="82" width="56" height="122" rx="18"/>' +
+            '<rect x="50" y="94" width="18" height="120" rx="9"/><rect x="132" y="94" width="18" height="120" rx="9"/>' +
+            '<rect x="74" y="208" width="20" height="152" rx="10"/><rect x="106" y="208" width="20" height="152" rx="10"/></svg>' +
+            '<div class="stage__tools">' + o.t.tools.map(function (x) { return '<button class="stage__tool">' + x + '</button>'; }).join('') + '</div>' +
+            '<div class="stage__badge">' + o.t.badge + '</div>' +
+            '<p class="stage__hint">' + o.t.stageHint + '</p></div>';
+        }
+
+        function topbarPart(o) {
+          return '<header class="panel panel--topbar"' + relStyle(o.rel) + '>' +
+            '<div class="topbar__brand"><span class="topbar__mark">解</span>' +
+            '<div class="topbar__text"><h1 class="topbar__title">' + o.t.title + '</h1>' +
+            '<p class="topbar__subtitle">' + o.t.subtitle + '</p></div></div>' +
+            '<div class="topbar__right">' +
+            seg([[o.t.male, 'male'], [o.t.female, 'female']], o.gender) +
+            seg([['中', 'zh'], ['EN', 'en']], o.locale) +
+            '<button class="btn btn--icon" title="' + o.t.theme + '">' + (o.theme === 'dark' ? '☀' : '☾') + '</button>' +
+            '<button class="btn btn--icon" title="' + o.t.back + '">↩</button>' +
+            '<span class="watermark">' + o.t.trial + '</span></div></header>';
+        }
+
+        function sidebarPart(o) {
+          var activeName = o.system || 'MuscularSystem';
+          var items = SYSTEMS.map(function (s) {
+            var active = s[0] === activeName;
+            var label = o.locale === 'zh' ? s[1] : s[2];
+            var leaves = active ? '<div class="tree__list">' +
+              '<button class="tree__leaf tree__leaf--active"><span class="tree__leaf-name">' + OBJ.zh + '</span>' +
+              '<span class="tree__leaf-id">' + OBJ.id + '</span></button>' +
+              '<button class="tree__leaf"><span class="tree__leaf-name">颧大肌</span>' +
+              '<span class="tree__leaf-id">Muscular_Zygomaticus_Major</span></button></div>' : '';
+            return '<li class="tree__section' + (active ? ' tree__section--active' : '') + '">' +
+              '<button class="tree__head"><span class="tree__dot" style="background:' + s[4] + ';color:' + s[4] + '"></span>' +
+              '<span class="tree__name">' + label + '</span><span class="tree__count">' + s[3] + ' 项</span></button>' + leaves + '</li>';
+          }).join('');
+
+          return '<aside class="panel panel--sidebar"' + relStyle(o.rel) + '>' +
+            '<div class="panel__head"><h2 class="panel__title">' + o.t.systems + '</h2>' +
+            '<span class="panel__hint">' + o.t.hint + '</span></div>' +
+            '<ul class="tree">' + items + '</ul>' +
+            '<div class="panel__foot">' +
+            '<label class="range"><span>' + o.t.opacity + '</span>' +
+            '<input class="range__input" type="range" value="' + (o.opacity || 100) + '" />' +
+            '<b class="range__value">' + (o.opacity || 100) + '%</b></label>' +
+            '<button class="btn btn--ghost btn--block' + (o.split ? ' btn--active' : '') + '">' + o.t.split + '</button>' +
+            '</div></aside>';
+        }
+
+        function detailPart(o) {
+          if (o.emptyDetail) {
+            return '<aside class="panel panel--detail"' + relStyle(o.rel) + '>' +
+              '<div class="panel__head"><h2 class="panel__title">' + o.t.detailTitle + '</h2></div>' +
+              '<p class="detail__empty">' + o.t.empty + '</p></aside>';
+          }
+          var title = o.locale === 'zh' ? OBJ.zh : OBJ.en;
+          var sub = o.locale === 'zh' ? OBJ.en : OBJ.zh;
+          return '<aside class="panel panel--detail"' + relStyle(o.rel) + '>' +
+            '<div class="panel__head"><h2 class="panel__title">' + o.t.detailTitle + '</h2>' +
+            '<span class="tag">' + OBJ.id + '</span></div>' +
+            '<h3 class="detail__name">' + title + '<small class="detail__name-sub">' + sub + '</small></h3>' +
+            '<dl class="detail__list">' +
+            '<div class="detail__row"><dt class="detail__term">' + o.t.morphology + '</dt><dd class="detail__desc">' + OBJ.morphology + '</dd></div>' +
+            '<div class="detail__row"><dt class="detail__term">' + o.t.position + '</dt><dd class="detail__desc">' + OBJ.posDesc + '</dd></div>' +
+            '<div class="detail__row"><dt class="detail__term">' + o.t.function + '</dt><dd class="detail__desc">' + OBJ.function + '</dd></div>' +
+            '</dl><button class="btn btn--primary btn--block">' + o.t.ask + '</button></aside>';
+        }
+
+        function chatPart(o) {
+          if (o.chatChip) {
+            return '<button class="chat__fab"' + (o.rel ? ' style="position:absolute;right:auto;bottom:auto;left:0;top:0"' : '') + '>AI</button>';
+          }
+          return '<section class="panel panel--chat"' + relStyle(o.rel) + '>' +
+            '<div class="chat__head"><span>' + o.t.chat + '</span>' +
+            '<button class="btn btn--icon" title="' + o.t.close + '">–</button></div>' +
+            '<div class="chat__messages">' +
+            '<div class="chat__msg chat__msg--bot">' + o.t.greet + '</div>' +
+            '<div class="chat__msg chat__msg--user">' + (o.locale === 'zh' ? '颧小肌的功能是什么？' : 'What does the zygomaticus minor do?') + '</div>' +
+            '<div class="chat__msg chat__msg--bot">' + o.t.chatReply + '</div></div>' +
+            '<form class="chat__form"><input class="chat__input" placeholder="' + o.t.placeholder + '" />' +
+            '<button class="btn btn--primary">' + o.t.send + '</button></form></section>';
+        }
+
+        var ASSETS = '../../public/media';
+
+        // 开始页（照搬上游 1_Start）：背景 / 视频 / 白色收尾遮罩 / 底部提示 / 居中「进入软件」
+        function startPart(o) {
+          var revealed = !!o.revealed;
+          return '<section class="screen screen--start"><div class="start">' +
+            '<img class="start__bg" src="' + ASSETS + '/ui/start/StartBg.png" alt="" />' +
+            '<div class="start__cover' + (revealed ? ' is-on' : '') + '"></div>' +
+            '<p class="start__tips' + (revealed ? ' is-hidden' : '') + '">' + o.t.startTips + '</p>' +
+            (revealed ? '<button class="btn btn--primary start__enter">' + o.t.enter + '</button>' : '') +
+            '<div class="start__corner">' + seg([['中', 'zh'], ['EN', 'en']], o.locale) +
+            '<button class="btn btn--icon">' + (o.theme === 'dark' ? '☀' : '☾') + '</button>' +
+            '<span class="watermark">' + o.t.trial + ' · v0.0.0</span></div>' +
+            '</div></section>';
+        }
+
+        // 加载页（照搬上游 LoadingPanel）：背景 + 居中随机提示 + 底部进度条（500×20 / 距底 150）
+        function loadingPart(o) {
+          var progress = o.progress || 46;
+          return '<section class="screen screen--loading"><div class="loading">' +
+            '<img class="loading__bg" src="' + ASSETS + '/ui/loading/LoadingBg.png" alt="" />' +
+            '<div class="loading__tip"><p class="loading__tip-text">' + o.t.loadingTips[0] + '</p></div>' +
+            '<div class="loading__slider"><div class="loading__slider-fill" style="width:' + progress + '%"></div></div>' +
+            '</div></section>';
+        }
+
+        function stageCloseup(o) {
+          return '<div style="position:relative;width:760px;height:520px;border-radius:20px;overflow:hidden;border:1px solid var(--glass-border)">' +
+            scene() + stagePart(o) + '</div>';
+        }
+
+        function contentScreen(o) {
+          return '<section class="screen screen--content" style="--tint:' + (o.tint || '#d9736b') + '">' +
+            scene() + stagePart(o) + topbarPart(o) + sidebarPart(o) + detailPart(o) + chatPart(o) + '</section>';
+        }
+
+        function base(locale, theme, extra) {
+          return Object.assign({ locale: locale, theme: theme, t: T[locale], gender: 'male', opacity: 100 }, extra || {});
+        }
+
+        /* ---------- 状态矩阵与口径 ---------- */
+        function table(rows, head) {
+          head = head || ['状态 / 项', '触发', '视觉', '令牌 / 实现'];
+          return '<table class="ds-table ds-spec"><thead><tr>' + head.map(function (h) { return '<th>' + h + '</th>'; }).join('') +
+            '</tr></thead><tbody>' + rows.map(function (r) {
+              return '<tr>' + r.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>';
+            }).join('') + '</tbody></table>';
+        }
+
+        /* ---------- §1 合屏 ---------- */
+        var SCREENS = [
+          {
+            id: 'start-playing', title: '开始页 · 视频播放中', meta: '1920×1080 · 背景 / 视频 / 底部提示',
+            build: function () { return startPart(base('zh', 'dark')); },
+            notes: ['<b>照搬</b>：上游 <code>StartPanel</code> 是全屏开场视频（AVProVideo 播 <code>StartVideo.mp4</code>，15s）＋ 背景图 <code>StartBg.png</code>。',
+              '<b>提示</b>：底部居中「点击屏幕任意位置跳过视频...」，带闪烁动画（上游 <code>TipsBlinkAnimation</code>）。',
+              '<b>跳过</b>：整屏可点（上游 StartPanel 根节点挂 Button）。'],
+          },
+          {
+            id: 'start-revealed', title: '开始页 · 收尾（白遮罩 + 进入软件）', meta: '1920×1080 · 遮罩淡入 1s → 0.5s 后出按钮',
+            build: function () { return startPart(base('zh', 'dark', { revealed: true })); },
+            notes: ['<b>时序</b>：播到 <code>videoDuration − 1.5s</code> → 遮罩淡入 1s → 隐藏提示 → 0.5s 后显示按钮（对齐 <code>StartPanel.ButtonActive()</code>）。',
+              '<b>遮罩颜色</b>：上游 CoverImage 的 <code>m_Color</code> 是纯白 (1,1,1,1)，脚本只动 alpha，所以是**白场**不是黑场。',
+              '<b>按钮</b>：160×30 居中，文案取自 prefab 覆盖值「进入软件」；点一次后置灰防重复。'],
+          },
+          {
+            id: 'loading', title: '加载页 · 46%', meta: '1920×1080 · 背景 + 随机提示 + 底部进度条',
+            build: function () { return loadingPart(base('zh', 'dark')); },
+            notes: ['<b>照搬</b>：上游 LoadingPanel 只有三件——背景图、一条随机提示（<code>tipsList</code> 随机）、Slider 进度。',
+              '<b>尺寸</b>：Slider 500×20、距底 150；提示块 TextBg 419×225，位于中心下方 225。',
+              '<b>进度</b>：两段重映射（加载 0–0.9 → 0–0.5；完成后 1s 补 0.5–1）。'],
+          },
+          {
+            id: 'content-light', title: '内容页 · 浅色（默认）', meta: '1920×1080 · 场景 + 四块悬浮面板',
+            build: function () { return contentScreen(base('zh', 'light', { tint: '#d9736b' })); },
+            notes: ['<b>骨架</b>：<code>.scene</code> 铺满 → <code>.stage</code>（人体 + 工具 + 徽标）→ 四块 <code>.panel</code>。',
+              '<b>光照</b>：选中系统色写入 <code>--tint</code>，驱动场景第三团柔光与各面板内发光。'],
+          },
+          {
+            id: 'content-dark', title: '内容页 · 深色', meta: '1920×1080 · 玻璃质感最强',
+            build: function () { return contentScreen(base('zh', 'dark', { tint: '#d9736b' })); },
+            notes: ['<b>为什么深色更好看</b>：<code>backdrop-filter</code> 需要背后有明暗差才有内容可模糊。'],
+          },
+          {
+            id: 'content-split', title: '内容页 · 拆分态（60%）', meta: '1920×1080 · .figure--split + 滑条',
+            build: function () { return contentScreen(base('zh', 'dark', { tint: '#c9b189', system: 'SkeletalSystem', split: true, opacity: 60 })); },
+            notes: ['<b>联动</b>：切骨骼系统后 <code>--tint</code> 换沙色，场景光/选中行/字段名同步。',
+              '<b>拆分</b>：纯 CSS transform，不依赖 three.js。'],
+          },
+          {
+            id: 'content-en', title: '内容页 · English', meta: '1920×1080 · 文案走字典',
+            build: function () { return contentScreen(base('en', 'light', { tint: '#d9736b' })); },
+            notes: ['<b>口径</b>：可见文案全部来自 <code>src/ui/i18n.ts</code>，组件不写死；缺词回退键名。'],
+          },
+          {
+            id: 'content-chat-chip', title: '内容页 · 对话收起 + 详情空态', meta: '1920×1080 · .chat__fab / .detail__empty',
+            build: function () { return contentScreen(base('zh', 'dark', { tint: '#6aa9d8', system: 'RespiratorySystem', chatChip: true, emptyDetail: true })); },
+            notes: ['<b>收起不销毁</b>：对话变悬浮球，主视口继续可操作。',
+              '<b>空态</b>：详情只给一句引导，不放假字段。'],
+          },
+          {
+            id: 'content-anatomy', title: '内容页 · 版面解剖', meta: '1920×1080 · 标注层仅存在于样张页',
+            build: function () {
+              return contentScreen(base('zh', 'dark', { tint: '#d9736b' })) +
+                '<div class="anno anno--down" style="left:16px;top:76px">--pad 16 / --topbar-h 56</div>' +
+                '<div class="anno anno--down" style="left:16px;top:210px">--sidebar-w 288</div>' +
+                '<div class="anno anno--down" style="right:16px;top:210px">--detail-w 360</div>' +
+                '<div class="anno anno--down" style="right:392px;top:600px">对话 342 × ≤52vh</div>' +
+                '<div class="anno anno--down" style="left:calc(50% - 96px);top:76px">工具胶囊（居中偏左 36）</div>';
+            },
+            notes: ['<b>锚点表</b>：面板位置全部由 CSS 变量决定，窄屏只改三个尺寸不改结构。',
+              '<b>安全区</b>：四边 16、顶栏下沿 88，主视口中心始终留空。'],
+          },
+        ];
+
+        /* ---------- §2 面板逐节 ---------- */
+        var PANELS = [
+          {
+            id: 'p-topbar',
+            name: 'P1 顶栏 · .panel--topbar',
+            duty: '全局身份与三个开关：性别、语言、主题；外加返回开始页与试用标识。',
+            size: '高 56 · 左右贴 16 · 圆角 <code>--radius-lg</code> · 层级 <code>--z-panel</code>',
+            build: function () { return topbarPart(base('zh', 'dark', { rel: 'position:relative;inset:auto;width:1500px;height:56px' })); },
+            zoom: 1.1,
+            states: [
+              ['默认', '—', '玻璃底 + 上缘 1px 高光 + 镜面高光停在左上', '<code>.panel</code> ::before'],
+              ['性别切换', '点分段', '选中项白底、品牌字色；体素列表与详情整屏重绘', '<code>.seg__item--active</code>'],
+              ['语言切换', '点 中/EN', '全站文案换字典，版式不变（英文更长，父级 ellipsis）', '<code>i18n.t()</code>'],
+              ['主题切换', '点 ☾/☀', '整站换 <code>data-theme</code>，图标随当前主题换成"去另一主题"', '<code>theme.toggleTheme()</code>'],
+              ['返回', '点 ↩', '回开始页（保留性别选择）', '<code>go(&#39;start&#39;)</code>'],
+            ],
+            notes: [
+              '<b>为什么不用侧边栏导航</b>：产品只有一层内容（九系统 + 体素），没有路由层级，横向顶栏足够。',
+              '<b>省略策略</b>：产品名/英文名各自单行 ellipsis；<code>.topbar__text</code> 允许被压缩，右侧控件不换行。',
+              '<b>窄屏</b>：&lt;1080 时只收 <code>--detail-w</code>/<code>--sidebar-w</code>，顶栏结构不变。',
+            ],
+          },
+          {
+            id: 'p-sidebar',
+            name: 'P2 系统树 · .panel--sidebar',
+            duty: '九大系统的一级导航 + 体素二级列表 + 底部两个全局调节（透明度、拆分）。',
+            size: '宽 288（<code>--sidebar-w</code>）· 顶 88 / 底 16 · 系统行高 34 · 体素缩进 26',
+            build: function () { return sidebarPart(base('zh', 'dark', { rel: 'position:relative;inset:auto;width:288px;height:720px' })); },
+            zoom: 1.35,
+            states: [
+              ['系统行 · 默认', '—', '次级文字 + 8px 色点（同色微光）+ 右侧计数', '<code>.tree__head</code>'],
+              ['系统行 · hover', '指针移入', '底色 <code>--c-text-1</code> 5% 提亮', '—'],
+              ['系统行 · 选中', '点系统', '<code>--tint</code> 16% 底 + 该色文字 + 字重 600', '<code>.tree__section--active</code>'],
+              ['体素行 · 选中', '点体素', '<code>--tint</code> 18% 底 + 左侧 2px 色条', '<code>.tree__leaf--active</code>'],
+              ['展开 / 收起', '点系统行', '展开显示该类体素；再点同系统 = 收起（当前实现保持选中并重绘）', '<code>active ? tree__list</code>'],
+              ['透明度 0–100', '拖滑条', '只改 <code>--opacity</code> 与数值文本，不重绘（避免打断拖拽）', '<code>input</code> 事件委托'],
+              ['拆分开关', '点按钮', '按钮转 <code>.btn--active</code>，人体各段错开', '<code>.figure--split</code>'],
+            ],
+            notes: [
+              '<b>计数用真实数据</b>：141 / 27 / 3 …（来自 <code>HumanBodyData.json</code>，样张取采样后的真实数字）。',
+              '<b>为什么树而不是网格</b>：系统 → 体素是天然两层，且要显示每类的体素数量。',
+              '<b>坑</b>：体素 <code>id</code> 等宽小字在 288 宽里会挤，必须 <code>ellipsis</code>；系统 9 行 + 展开项要能滚动，底部操作区固定不滚。',
+            ],
+          },
+          {
+            id: 'p-detail',
+            name: 'P3 体素详情 · .panel--detail',
+            duty: '把 JSON 里的六个字段变成可读内容：中文名 / 英文名 / 形态 / 位置 / 功能 + 一个问 AI 的入口。',
+            size: '宽 360（<code>--detail-w</code>）· 顶 88 / 底 16 · 标题 20 / 副名 12 · 正文 13 / 行高 1.7',
+            build: function () { return detailPart(base('zh', 'dark', { rel: 'position:relative;inset:auto;width:360px;height:620px' })); },
+            zoom: 1.25,
+            states: [
+              ['有选中', '点任意体素', '名称 + 三段字段 + 主按钮；字段名用 <code>--tint</code> 混品牌色', '<code>.detail__name</code>'],
+              ['未选中', '初始/重置', '只给一句引导，不渲染灰字段', '<code>.detail__empty</code>'],
+              ['长文', '字段超屏', '字段区内部滚动，主按钮常驻底部', '<code>.detail__list</code> overflow'],
+              ['问 AI', '点主按钮', '打开对话并塞入一条带部位名的提问', '<code>data-act="ask"</code>'],
+            ],
+            notes: [
+              '<b>字段顺序固定</b>：形态 → 位置 → 功能（与 <code>business.md</code> §4 的字段顺序一致），不随语言变。',
+              '<b>不显示</b> id 之外的技术字段；<code>id</code> 只出现在标题右侧 <code>.tag</code> 里（等宽字体，便于对模型节点名）。',
+              '<b>双语</b>：主名/副名按 <code>locale</code> 互换，不新增译文。',
+            ],
+          },
+          {
+            id: 'p-chat',
+            name: 'P4 AI 对话 · .panel--chat',
+            duty: '最简对话通道：一问一答 + 会话历史；上下文带当前选中体素（本版不接模型）。',
+            size: '宽 342 · 最高 52vh · 贴在详情左侧（<code>right = pad + detail-w + 12</code>）· 气泡最大 85%',
+            build: function () { return chatPart(base('zh', 'dark', { rel: 'position:relative;inset:auto;width:342px;height:460px' })); },
+            zoom: 1.25,
+            states: [
+              ['展开', '—', '标题栏 + 消息区（玻璃底）+ 输入行', '<code>.panel--chat</code>'],
+              ['收起', '点 –', '变 48px 悬浮球 <code>.chat__fab</code>，不销毁、不丢历史', '—'],
+              ['助手气泡', '收到回复', '左对齐、玻璃强底、1px 边框', '<code>.chat__msg--bot</code>'],
+              ['用户气泡', '发送成功', '右对齐、品牌渐变、白字', '<code>.chat__msg--user</code>'],
+              ['空输入', '——', '发送不产生消息（<code>trim()</code> 判空）', '<code>sendChat()</code>'],
+            ],
+            notes: [
+              '<b>为什么收起而不是关闭</b>：产品里 AI 是辅助入口，关掉后学员找不到；收起保留入口且不挡视口。',
+              '<b>本版不接模型</b>：回复是固定占位文案（<code>D-20261030-07</code> 最简实现），接入后替换 <code>src/api</code> 与这条文案。',
+              '<b>坑</b>：窄屏（&lt;1080）详情面板隐藏后，对话回落到 <code>right: --pad</code>，否则会飘到屏幕外。',
+            ],
+          },
+          {
+            id: 'p-stage',
+            name: 'P5 场景与悬浮件 · .scene / .stage',
+            duty: '三维视口占位 + 三件悬浮控制：工具胶囊、状态徽标、底部提示。',
+            size: '场景铺满 · 工具胶囊顶部居中偏左 36 · 徽标右上贴详情左侧 · 人体占位 clamp(200,24vw,360)',
+            build: function () { return stageCloseup(base('zh', 'dark', { tint: '#d9736b' })); },
+            zoom: 1,
+            states: [
+              ['默认', '—', '虚线人体 + 系统色描边 + 三团柔光', '<code>.figure</code> / <code>.scene::after</code>'],
+              ['拆分', '左栏拆分按钮', '各段 transform 错开 16px 级', '<code>.figure--split</code>'],
+              ['透明度', '滑条', '整图 opacity 随 <code>--opacity</code>', '—'],
+              ['工具按钮', '点四钮', '本版只弹轻提示（three.js 未接）', '<code>data-act="stage"</code>'],
+            ],
+            notes: [
+              '<b>接入边界</b>：three.js 落地时只替换 <code>.figure</code> 为 canvas 与拾取回调，工具胶囊/徽标/提示保留。',
+              '<b>指针事件</b>：<code>.stage</code> 整体 <code>pointer-events:none</code>，只有子控件接收事件，避免挡住视口拖拽。',
+              '<b>为什么保留占位</b>：让版面评审能在没有模型时也判断遮挡关系。',
+            ],
+          },
+          {
+            id: 'p-start',
+            name: 'P6 开始页 · .start__*（照搬 1_Start / StartPanel）',
+            duty: '开场视频 → 任意点击跳过 → 白遮罩收尾 → 出「进入软件」；这一屏是产品的脸面，不承担任何设置。',
+            size: '全屏舞台 · 视频/背景 cover · 提示距底 92 / 宽 544 · 按钮 160×30 居中',
+            build: function () {
+              return '<div style="position:relative;width:1180px;height:664px;border-radius:16px;overflow:hidden;border:1px solid var(--glass-border)">' +
+                startPart(base('zh', 'dark')) + '</div>';
+            },
+            zoom: 1,
+            states: [
+              ['播放中', '进入场景', '背景图 + 视频（alpha 0→1 / 0.5s）＋ 底部提示闪烁', '<code>.start__video</code> / <code>.start__tips</code>'],
+              ['跳过', '点击任意位置', '视频暂停，白遮罩 1s 淡入，提示隐藏', '<code>.start__cover.is-on</code>'],
+              ['收尾', '播到 13.5s 或跳过后', '0.5s 后出现「进入软件」', '<code>.start__enter</code>'],
+              ['进入', '点按钮', '按钮置灰防重复 → 加载页', '<code>go(&#39;loading&#39;)</code>'],
+              ['新增能力', '右上角小控件', '语言 / 主题 / 版本水印（上游没有，收成半透明小条）', '<code>.start__corner</code>'],
+            ],
+            notes: [
+              '<b>素材</b>：<code>public/assets/ui/start/StartBg.png</code>（3840×2160）与 <code>public/assets/video/StartVideo.mp4</code>（约 39MB），均从上游原样搬入。',
+              '<b>遮罩是白的</b>：上游 <code>CoverImage.m_Color</code> = (1,1,1,1)，脚本只动 alpha——照搬为白场，别改成黑场。',
+              '<b>兜底</b>：视频读不到时长或自动播放被拒时，13.5s 后照样放出按钮（Web 端自动播放策略比 Unity 严）。',
+            ],
+          },
+          {
+            id: 'p-loading',
+            name: 'P7 加载页 · .loading__*（照搬 LoadingPanel）',
+            duty: '过渡用的极简页：背景图 + 一条随机提示 + 底部进度条；没有阶段清单、没有取消。',
+            size: '进度条 500×20、距底 150 · 提示块 419×225、中心下方 225 · 背景 3840×2160',
+            build: function () {
+              return '<div style="position:relative;width:1180px;height:664px;border-radius:16px;overflow:hidden;border:1px solid var(--glass-border)">' +
+                loadingPart(base('zh', 'dark', { progress: 46 })) + '</div>';
+            },
+            zoom: 1,
+            states: [
+              ['加载段', '进入即开始', '进度 0→50%，用时约 1.2s（模拟）', '<code>LOAD_MS</code>'],
+              ['过渡段', '加载完成', '50→100%，1s 补满，随后 120ms 进内容页', '<code>TAIL_MS</code>'],
+              ['提示', '每次进入', '从 3 条里随机取一条（对齐上游 <code>tipsList</code> 随机）', '<code>TIP_KEYS</code>'],
+            ],
+            notes: [
+              '<b>为什么这么"空"</b>：上游只用一个 Slider + 一条提示，进度由 <code>StartPanel</code> 的协程写入；照搬后视觉更接近交付物，也避免"假阶段"误导。',
+              '<b>进度是模拟的</b>：真实加载接入后，把 <code>requestAnimationFrame</code> 的推进换成资源加载回调。',
+              '<b>素材</b>：<code>public/assets/ui/loading/LoadingBg.png</code>（3840×2160）原样搬入。',
+            ],
+          },
+          {
+            id: 'p-control',
+            name: 'P8 基础控件 · .btn / .seg / .tag / .field / .range / .toast',
+            duty: '所有面板共用的九个控件；状态口径统一在这里定，面板里不再各自定义。',
+            size: '按钮高 32（<code>--space-2</code> 纵向 + 13 字号）· 图标按钮 32×32 · 圆角 <code>--radius-md</code>',
+            build: function () {
+              return '<div style="display:flex;flex-direction:column;gap:22px;width:980px">' +
+                '<div style="display:flex;gap:12px;align-items:center"><span style="width:110px;font-size:12px;color:var(--c-text-3)">.btn</span>' +
+                '<button class="btn btn--primary">主行动</button><button class="btn btn--ghost">次行动</button>' +
+                '<button class="btn btn--ghost btn--active">已开启</button><button class="btn btn--icon">☾</button>' +
+                '<button class="btn btn--primary btn--large">加大号</button></div>' +
+                '<div style="display:flex;gap:12px;align-items:center"><span style="width:110px;font-size:12px;color:var(--c-text-3)">.seg</span>' +
+                seg([['男', 'male'], ['女', 'female']], 'male') + seg([['中', 'zh'], ['EN', 'en']], 'zh') + '</div>' +
+                '<div style="display:flex;gap:12px;align-items:center"><span style="width:110px;font-size:12px;color:var(--c-text-3)">.tag / .watermark</span>' +
+                '<span class="tag">Muscular_Zygomaticus_Minor</span><span class="watermark">试用版</span></div>' +
+                '<div style="display:flex;gap:12px;align-items:center"><span style="width:110px;font-size:12px;color:var(--c-text-3)">.field</span>' +
+                '<div class="field" style="width:520px"><span class="field__label">性别</span>' + seg([['男', 'male'], ['女', 'female']], 'male') + '</div></div>' +
+                '<div style="display:flex;gap:12px;align-items:center"><span style="width:110px;font-size:12px;color:var(--c-text-3)">.range</span>' +
+                '<label class="range" style="width:520px"><span>透明度</span><input class="range__input" type="range" value="70" /><b class="range__value">70%</b></label></div>' +
+                '<div style="display:flex;gap:12px;align-items:center"><span style="width:110px;font-size:12px;color:var(--c-text-3)">.toast</span>' +
+                '<div class="toast toast--visible" style="position:static;transform:none">拆分 · mockup</div></div>' +
+                '</div>';
+            },
+            zoom: 1.1,
+            states: [
+              ['.btn--primary', 'hover', '亮度 +7%，不换色', '<code>filter: brightness(1.07)</code>'],
+              ['.btn--ghost', 'hover / active', '描边与文字转品牌色；active 再补浅底', '.btn--active'],
+              ['.btn--icon', 'hover', '边框/图标转品牌色', '—'],
+              ['.seg__item--active', '选中', '玻璃强底 + 品牌字色 + 内高光', '—'],
+              ['.range', '拖动', '只改数值与 <code>--opacity</code>，不重绘', '事件委托'],
+              ['.toast', '操作反馈', '1.6s 后自动隐藏（<code>.toast--visible</code> 由 JS 加/去）', '—'],
+              ['键盘 focus', 'Tab', '2px 品牌色 <code>outline</code> + 2px 偏移', '<code>:focus-visible</code>'],
+            ],
+            notes: [
+              '<b>零字面量</b>：九个控件全部只用 <code>tokens.css</code> 的变量，明暗与 <code>--tint</code> 自动跟随。',
+              '<b>状态不多造</b>：不做 disabled / loading 态（数据全在本地，没有等待语义）；确实需要时先在本表加一行再实现。',
+            ],
+          },
+        ];
+
+        /* ---------- §3 面板 × class 覆盖矩阵 ---------- */
+        var MATRIX = [
+          ['<code>.panel--topbar</code>', '内容页', '顶栏', '.topbar__brand / __mark / __title / __subtitle / __right', '性别 / 语言 / 主题 / 返回'],
+          ['<code>.panel--sidebar</code>', '内容页', '系统树', '.tree__section / __head / __dot / __name / __count / __list / __leaf', '选中 / hover / 展开'],
+          ['<code>.panel--detail</code>', '内容页', '详情', '.detail__name / __name-sub / __list / __row / __term / __desc / __empty', '有选中 / 空态 / 长文'],
+          ['<code>.panel--chat</code>', '内容页', '对话', '.chat__head / __messages / __msg--bot|--user / __form / __input / __fab', '展开 / 收起'],
+          ['<code>.stage</code>', '内容页', '场景悬浮件', '.stage__tools / __tool / __badge / __hint / .figure--split', '拆分 / 透明度'],
+          ['<code>.start__*</code>', '开始页', '开场视频舞台', '.start__bg / __video / __cover / __tips / __enter / __corner', '播放中 / 跳过 / 收尾 / 进入'],
+          ['<code>.loading__*</code>', '加载页', '过渡页', '.loading__bg / __tip / __tip-text / __slider / __slider-fill', '加载段 / 过渡段 / 提示'],
+          ['<code>.btn / .seg / .tag / .field / .range / .toast</code>', '全站', '基础控件', '（见 P8）', 'hover / active / focus'],
+        ];
+
+        /* ---------- 渲染 ---------- */
+        var host = document.getElementById('frames');
+        var shot = q.get('shot');
+
+        function shotBlock(f, kind) {
+          return '<div class="shot' + (shot === f.id ? ' is-target' : '') + '" id="' + f.id + '">' +
+            '<div class="shot__head"><h3>' + f.title + '</h3><code>' + f.id + '</code><span>' + f.meta + '</span></div>' +
+            '<div class="shot__viewport"><div class="shot__canvas' + (kind === 'panel' ? ' shot__canvas--closeup' : '') +
+            '" data-theme="' + (f.id.indexOf('light') >= 0 || f.id === 'content-en' ? 'light' : 'dark') + '"' +
+            (f.zoom ? ' style="--zoom:' + f.zoom + '"' : '') + '>' +
+            (kind === 'panel' ? '<div class="closeup">' + f.build() + '</div>' : f.build()) +
+            '</div></div>' +
+            '<ul class="shot__notes">' + f.notes.map(function (n) { return '<li>' + n + '</li>'; }).join('') + '</ul>' +
+            '</div>';
+        }
+
+        function panelBlock(p) {
+          return '<section class="ds-panel' + (shot === p.id ? ' is-target' : '') + '" id="' + p.id + '">' +
+            '<h3 class="ds-panel__name">' + p.name + '</h3>' +
+            '<p class="ds-panel__duty">' + p.duty + '</p>' +
+            '<p class="ds-panel__size"><b>尺寸 / 锚点：</b>' + p.size + '</p>' +
+            '<div class="shot' + (shot === p.id ? ' is-target' : '') + '" id="' + p.id + '-frame">' +
+            '<div class="shot__head"><h3>特写</h3><code>' + p.id + '</code><span>放大 ' + p.zoom + '×</span></div>' +
+            '<div class="shot__viewport"><div class="shot__canvas shot__canvas--closeup" data-theme="dark" style="--zoom:' + p.zoom + '">' +
+            '<div class="closeup">' + p.build() + '</div></div></div></div>' +
+            table(p.states) +
+            '<ul class="shot__notes">' + p.notes.map(function (n) { return '<li>' + n + '</li>'; }).join('') + '</ul>' +
+            '</section>';
+        }
+
+        host.innerHTML =
+          '<section class="ds-section">' +
+          '<h2>§1 三屏合屏</h2>' +
+          '<p class="ds-note">画布 1920×1080，页面内等比缩放；<code>?shot=&lt;id&gt;</code> 出 1:1 单幕。</p>' +
+          SCREENS.map(function (f) { return shotBlock(f, 'screen'); }).join('') +
+          '</section>' +
+          '<section class="ds-section">' +
+          '<h2>§2 面板逐节解剖</h2>' +
+          '<p class="ds-note">每个面板 = 职责一句 ＋ 尺寸锚点 ＋ 特写帧 ＋ 状态矩阵 ＋ 口径要点；class 明细见 <code>docs/ui-spec.md</code>。</p>' +
+          PANELS.map(panelBlock).join('') +
+          '</section>' +
+          '<section class="ds-section">' +
+          '<h2>§3 面板 × class 覆盖矩阵</h2>' +
+          '<p class="ds-note">用来核对"每个 class 都有归属面板、每个面板都有状态口径"。</p>' +
+          table(MATRIX, ['面板 / 组件', '出现屏幕', '职责', '内部 class', '状态']) +
+          '</section>';
+
+        // ?only=<id>：只留一块（评审单节时用，不影响 ?shot 出图）
+        var only = q.get('only');
+        if (only && !shot) {
+          document.querySelectorAll('.shot, .ds-panel').forEach(function (el) {
+            if (el.id !== only && el.id !== only + '-frame') el.remove();
+          });
+          document.querySelectorAll('.ds-section').forEach(function (sec) {
+            if (!sec.querySelector('.shot, .ds-panel')) sec.remove();
+          });
+        }
+
+        if (shot) {
+          document.body.classList.add('shot-mode');
+          var target = document.getElementById(shot) || document.getElementById(shot + '-frame');
+          if (!target) {
+            // 目标 id 是面板（p-xxx）：只保留它的特写帧
+            document.querySelectorAll('.ds-panel').forEach(function (sec) {
+              if (sec.id !== shot) sec.remove();
+            });
+          }
+          var wantLight = shot.indexOf('light') >= 0 || shot === 'content-en';
+          document.documentElement.setAttribute('data-theme', wantLight ? 'light' : 'dark');
+        } else {
+          var fit = function () {
+            document.querySelectorAll('.shot__viewport').forEach(function (vp) {
+              var canvas = vp.querySelector('.shot__canvas');
+              if (!canvas) return;
+              var scale = Math.min(1, vp.clientWidth / 1920);
+              if (canvas.classList.contains('shot__canvas--closeup')) {
+                // 特写帧：面板本身小于画布，按容器缩放但不额外留白
+                canvas.style.setProperty('--scale', Math.max(scale, 0.42));
+                vp.style.height = 1080 * Math.max(scale, 0.42) + 'px';
+                return;
+              }
+              canvas.style.setProperty('--scale', scale);
+              vp.style.height = 1080 * scale + 'px';
+            });
+          };
+          fit();
+          window.addEventListener('resize', fit);
+
+          // fit() 会改各帧高度，锚点要等高度稳定后再跳一次
+          if (location.hash) {
+            var anchor = document.querySelector(location.hash);
+            if (anchor) anchor.scrollIntoView();
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

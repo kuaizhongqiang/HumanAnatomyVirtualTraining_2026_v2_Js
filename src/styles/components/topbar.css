@@ -1,0 +1,53 @@
+/* 组件：顶栏（.panel--topbar 的内部元素） */
+
+/* .topbar__brand — 左品牌区（图标 + 中英名） */
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* .topbar__mark — 品牌图标方块 */
+.topbar__mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(140deg, var(--c-brand), color-mix(in srgb, var(--c-brand) 45%, var(--tint, var(--c-brand))));
+  color: var(--c-brand-ink);
+  font-weight: var(--fw-bold);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%), 0 4px 12px -4px color-mix(in srgb, var(--c-brand) 60%, transparent);
+}
+
+/* .topbar__text — 品牌文字容器 */
+.topbar__text {
+  min-width: 0;
+}
+
+/* .topbar__title — 产品名（单行省略） */
+.topbar__title {
+  font-size: var(--fs-14);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* .topbar__subtitle — 英文名（更小更弱） */
+.topbar__subtitle {
+  font-size: var(--fs-11);
+  letter-spacing: 0.02em;
+  color: var(--c-text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* .topbar__right — 右侧控件组 */
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}

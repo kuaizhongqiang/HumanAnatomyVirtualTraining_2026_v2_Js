@@ -1,0 +1,134 @@
+/* 组件：场景内悬浮件（工具胶囊 / 视口徽标 / 提示 / 人体占位） */
+
+/* .stage — 场景层容器内的浮层定位上下文 */
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-scene-ui);
+  pointer-events: none;
+}
+
+/* .stage > * — 只让可交互件接收指针事件 */
+.stage > * {
+  pointer-events: auto;
+}
+
+/* .stage__tools — 顶部居中的工具胶囊（旋转/复位/聚焦/全屏） */
+.stage__tools {
+  position: absolute;
+  left: calc(50% - 36px);
+  top: calc(var(--topbar-h) + var(--pad) * 2 + var(--space-1));
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  background-color: var(--glass-strong);
+  backdrop-filter: blur(16px) saturate(165%) brightness(var(--glass-brightness));
+  -webkit-backdrop-filter: blur(16px) saturate(165%) brightness(var(--glass-brightness));
+  box-shadow: var(--shadow-1), inset 0 1px 0 rgb(255 255 255 / 45%);
+}
+
+/* .stage__tool — 单个工具按钮 */
+.stage__tool {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-12);
+  color: var(--c-text-2);
+}
+
+.stage__tool:hover {
+  background: color-mix(in srgb, var(--tint, var(--c-brand)) 18%, transparent);
+  color: color-mix(in srgb, var(--tint, var(--c-brand)) 65%, var(--c-text-1));
+}
+
+/* .stage__badge — 右上角状态徽标（3D 视口待接入） */
+.stage__badge {
+  position: absolute;
+  top: calc(var(--topbar-h) + var(--pad) * 2 + var(--space-1));
+  right: calc(var(--pad) + var(--detail-w) + var(--space-3));
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  background-color: var(--glass-strong);
+  backdrop-filter: blur(16px) saturate(165%) brightness(var(--glass-brightness));
+  -webkit-backdrop-filter: blur(16px) saturate(165%) brightness(var(--glass-brightness));
+  color: var(--c-text-2);
+  font-size: var(--fs-11);
+  box-shadow: var(--shadow-1), inset 0 1px 0 rgb(255 255 255 / 40%);
+}
+
+/* .stage__hint — 底部说明文案 */
+.stage__hint {
+  position: absolute;
+  bottom: calc(var(--pad) + var(--space-2));
+  left: calc(50% - 36px);
+  transform: translateX(-50%);
+  max-width: 46%;
+  text-align: center;
+  color: var(--c-text-3);
+  font-size: var(--fs-12);
+  text-shadow: 0 1px 8px color-mix(in srgb, var(--c-bg) 70%, transparent);
+}
+
+/* .figure — 人体占位剪影（three.js 接入后由 canvas 取代） */
+.figure {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(200px, 24vw, 360px);
+  height: auto;
+  transform: translate(-50%, -50%);
+  color: color-mix(in srgb, var(--tint, var(--c-brand)) 82%, var(--c-text-1));
+  opacity: calc(var(--opacity, 1) * 0.92);
+  filter: drop-shadow(0 0 34px color-mix(in srgb, var(--tint, var(--c-brand)) 45%, transparent))
+    drop-shadow(0 18px 30px rgb(0 0 0 / 14%));
+}
+
+/* .figure > * — 每个身体段；虚线描边表示"占位"语义 */
+.figure > * {
+  fill: color-mix(in srgb, var(--tint, var(--c-brand)) 6%, transparent);
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+/* .figure--split — 拆分态：各段向外错开 */
+.figure--split circle {
+  transform: translateY(-16px);
+}
+
+.figure--split rect:nth-of-type(1) {
+  transform: translateY(4px) scale(0.97);
+}
+
+.figure--split rect:nth-of-type(2) {
+  transform: translate(-16px, 2px);
+}
+
+.figure--split rect:nth-of-type(3) {
+  transform: translate(16px, 2px);
+}
+
+.figure--split rect:nth-of-type(4) {
+  transform: translate(-9px, 12px);
+}
+
+.figure--split rect:nth-of-type(5) {
+  transform: translate(9px, 12px);
+}
+
+@media (max-width: 1080px) {
+  .stage__badge {
+    right: var(--pad);
+  }
+
+  .stage__tools,
+  .stage__hint {
+    left: 50%;
+  }
+}

@@ -1,0 +1,64 @@
+/* 屏幕：加载页（照搬上游 LoadingPanel）
+   结构：背景图 → 居中的一条随机提示（TextBg 418×224）→ 底部进度条（Slider 500×20，距底 150）。 */
+
+/* .loading — 铺满屏幕的舞台 */
+.loading {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #05080d;
+}
+
+/* .loading__bg — 加载背景图（上游 Sprites/LoadingBg.png，3840×2160） */
+.loading__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* .loading__tip — 提示块：居中偏下 224px，尺寸对齐上游 TextBg */
+.loading__tip {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, calc(-50% + 225px));
+  width: min(419px, 76vw);
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  background: rgb(6 12 20 / 38%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  text-align: center;
+}
+
+/* .loading__tip-text — 提示正文（上游 330×89，顶部对齐） */
+.loading__tip-text {
+  font-size: var(--fs-13);
+  line-height: var(--lh-loose);
+  color: #e8f0fb;
+}
+
+/* .loading__slider — 底部进度条（上游 Slider：500×20，距底 150） */
+.loading__slider {
+  position: absolute;
+  left: 50%;
+  bottom: 150px;
+  transform: translateX(-50%);
+  width: min(500px, 78vw);
+  height: 20px;
+  padding: 5px;
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 14%);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 35%);
+}
+
+/* .loading__slider-fill — 填充（宽度由 JS 写内联 width） */
+.loading__slider-fill {
+  height: 100%;
+  width: 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--c-brand), color-mix(in srgb, var(--c-brand) 55%, #7bd0c8));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--c-brand) 70%, transparent);
+}

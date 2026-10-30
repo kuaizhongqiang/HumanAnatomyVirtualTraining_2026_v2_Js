@@ -1,0 +1,165 @@
+/* 组件：.panel —— 毛玻璃面板（内容页四块 + 开始/加载页的对话框）
+   质感 = 半透明底 + backdrop-filter(blur/saturate/brightness) + 镜面高光 + 多层内发光 + 色散边。 */
+
+/* .panel — 基础面板：玻璃、圆角、内外阴影；默认相对定位（对话框用法） */
+.panel {
+  position: relative;
+  z-index: var(--z-panel);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  background-color: var(--glass);
+  background-image: linear-gradient(135deg, var(--glass-sheen) 0%, rgb(255 255 255 / 4%) 40%, transparent 62%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat)) brightness(var(--glass-brightness));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat)) brightness(var(--glass-brightness));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--c-text-1) 6%, transparent),
+    var(--shadow-1),
+    inset 0 1px 0 rgb(255 255 255 / 45%),
+    inset 0 -1px 0 var(--edge-dark),
+    var(--inner-glow),
+    0 26px 72px -42px color-mix(in srgb, var(--tint, var(--c-brand)) 60%, transparent);
+  overflow: hidden;
+  transition: box-shadow var(--dur-base) var(--ease-out);
+}
+
+/* .panel::before — 镜面高光：跟随指针（--light-x/--light-y），无 JS 时落在左上 */
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    240px circle at var(--light-x, 26%) var(--light-y, 8%),
+    var(--specular) 0%,
+    transparent 62%
+  );
+  mix-blend-mode: screen;
+}
+
+/* .panel::after — 色散边：±1px 红/蓝，模拟玻璃的波长分离 */
+.panel::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset -1px 0 0 var(--chroma-a), inset 1px 0 0 var(--chroma-b);
+}
+
+/* .panel > * — 内容抬到高光层之上 */
+.panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* .panel:hover — 悬浮时抬升一级阴影 */
+.panel:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--c-text-1) 8%, transparent),
+    var(--shadow-2),
+    inset 0 1px 0 rgb(255 255 255 / 50%),
+    inset 0 -1px 0 var(--edge-dark),
+    var(--inner-glow);
+}
+
+/* .panel--dialog — 开始页 / 加载页的居中卡片 */
+.panel--dialog {
+  width: min(560px, 92vw);
+  padding: var(--space-8);
+  gap: var(--space-5);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--c-text-1) 6%, transparent),
+    var(--shadow-3),
+    inset 0 1px 0 rgb(255 255 255 / 50%),
+    inset 0 -1px 0 var(--edge-dark),
+    var(--inner-glow);
+}
+
+/* 内容页四块：绝对定位 + 各自坐标 */
+.panel--topbar {
+  position: absolute;
+  top: var(--pad);
+  left: var(--pad);
+  right: var(--pad);
+  height: var(--topbar-h);
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-lg);
+}
+
+.panel--sidebar {
+  position: absolute;
+  top: calc(var(--pad) * 2 + var(--topbar-h));
+  left: var(--pad);
+  bottom: var(--pad);
+  width: var(--sidebar-w);
+  padding: var(--space-3);
+}
+
+.panel--detail {
+  position: absolute;
+  top: calc(var(--pad) * 2 + var(--topbar-h));
+  right: var(--pad);
+  bottom: var(--pad);
+  width: var(--detail-w);
+  padding: var(--space-4);
+}
+
+.panel--chat {
+  position: absolute;
+  right: calc(var(--pad) + var(--detail-w) + var(--space-3));
+  bottom: var(--pad);
+  width: 342px;
+  max-height: 52vh;
+}
+
+/* .panel__head — 面板小标题栏（左标题 + 右提示/标签） */
+.panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid color-mix(in srgb, var(--c-text-1) 8%, transparent);
+}
+
+/* .panel__title — 面板标题（大写字距，弱化层级） */
+.panel__title {
+  font-size: var(--fs-12);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+/* .panel__hint — 标题栏右侧的辅助说明 */
+.panel__hint {
+  font-size: var(--fs-11);
+  color: var(--c-text-3);
+}
+
+/* 兜底：不支持实时模糊时改为不透底，保证可读性 */
+@supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
+  .panel {
+    background-color: var(--c-surface);
+  }
+}
+
+@media (max-width: 1080px) {
+  .panel--detail {
+    display: none;
+  }
+
+  .panel--chat {
+    right: var(--pad);
+  }
+}

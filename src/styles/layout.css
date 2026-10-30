@@ -1,0 +1,104 @@
+/* 第 2 层：页面骨架（屏幕容器 + 场景背景 + 悬浮层定位）
+   三个屏幕共用 .app 容器；每个屏幕是 .screen 的一个修饰符。 */
+
+/* .app — 应用根，承担定位上下文与屏幕切换容器 */
+.app {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--c-bg);
+}
+
+/* .screen — 单个屏幕的铺满容器（start / loading / content） */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  animation: screen-in var(--dur-slow) var(--ease-out) both;
+}
+
+/* .screen--start — 开始页：居中单卡 */
+.screen--start {
+  align-items: center;
+  justify-content: center;
+}
+
+/* .screen--loading — 加载页：居中单卡 */
+.screen--loading {
+  align-items: center;
+  justify-content: center;
+}
+
+/* .screen--content — 内容页：场景铺底、面板浮在上层 */
+.screen--content {
+  display: block;
+}
+
+@keyframes screen-in {
+  from {
+    opacity: 0;
+    transform: scale(0.994);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* .scene — 内容页的全幅背景层（网格 + 三团柔光 + 人体占位） */
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-scene);
+  display: grid;
+  place-items: center;
+  background: var(--scene-bg);
+}
+
+/* .scene::before — 透视网格，靠 mask 向内收边，避免铺满的机械感 */
+.scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(var(--scene-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--scene-grid) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(ellipse at 50% 46%, #000 26%, transparent 76%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 46%, #000 26%, transparent 76%);
+}
+
+/* .scene::after — 全局光：冷光（左上）、暖光（右）、系统染色（中下） */
+.scene::after {
+  content: '';
+  position: absolute;
+  inset: -12%;
+  background:
+    radial-gradient(30% 34% at 10% 10%, var(--glow-a) 0%, transparent 68%),
+    radial-gradient(28% 32% at 90% 44%, var(--glow-b) 0%, transparent 70%),
+    radial-gradient(36% 34% at 50% 64%, color-mix(in srgb, var(--tint, var(--c-brand)) 24%, transparent) 0%, transparent 72%),
+    radial-gradient(52% 44% at 50% 52%, rgb(255 255 255 / 12%) 0%, transparent 70%);
+  filter: blur(8px);
+}
+
+/* .scene--dim — 内容页被遮挡时压暗（如打开对话框） */
+.scene--dim {
+  filter: brightness(0.94);
+}
+
+/* 开始 / 加载页现在是全屏舞台（背景图 + 视频 / 进度条），不再居中卡片：
+   容器自身铺满，内部元素各自绝对定位，见 components/screen-start.css 与 screen-loading.css。 */
+
+/* 窄屏：内容页逐级收起 */
+@media (max-width: 1280px) {
+  .app {
+    --detail-w: 320px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .app {
+    --sidebar-w: 262px;
+  }
+}

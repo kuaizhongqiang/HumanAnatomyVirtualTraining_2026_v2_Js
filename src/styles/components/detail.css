@@ -1,0 +1,59 @@
+/* 组件：体素详情（右侧面板主体） */
+
+/* .detail__name — 体素主名 + 英文名（次行小字） */
+.detail__name {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 var(--space-2);
+  font-size: var(--fs-20);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+}
+
+/* .detail__name-sub — 名称的第二种语言 */
+.detail__name-sub {
+  font-size: var(--fs-12);
+  font-weight: var(--fw-regular);
+  color: var(--c-text-3);
+}
+
+/* .detail__list — 字段列表（形态 / 位置 / 功能），可滚动 */
+.detail__list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-1) 2px var(--space-3);
+}
+
+/* .detail__row — 单个字段块 */
+.detail__row {
+  display: block;
+}
+
+/* .detail__term — 字段名（小号大写 + 系统染色） */
+.detail__term {
+  margin-bottom: 3px;
+  font-size: var(--fs-11);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--tint, var(--c-brand)) 70%, var(--c-brand));
+}
+
+/* .detail__desc — 字段正文（长文本，行高放宽） */
+.detail__desc {
+  font-size: var(--fs-13);
+  line-height: var(--lh-loose);
+  color: var(--c-text-2);
+}
+
+/* .detail__empty — 未选中时的空态文案 */
+.detail__empty {
+  margin-top: var(--space-4);
+  font-size: var(--fs-13);
+  color: var(--c-text-3);
+}

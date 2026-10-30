@@ -1,0 +1,130 @@
+/* 屏幕：开始页（照搬上游 1_Start / StartPanel）
+   结构：背景图 → 开场视频（淡入 0.5s）→ 任意点击跳过 → 遮罩淡入 1s → 0.5s 后出现「进入软件」。 */
+
+/* .start — 铺满屏幕的舞台，视频/背景/遮罩都叠在它上面 */
+.start {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #05080d;
+}
+
+/* .start__bg — 开场背景图（上游 Sprites/StartBg.png，3840×2160） */
+.start__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* .start__video — 开场视频（上游 AVProVideo 播 StreamingAssets/Video/StartVideo.mp4） */
+.start__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  animation: start-video-in 0.5s var(--ease-out) forwards;
+}
+
+/* .start__cover — 收尾遮罩：视频结束前淡入盖住视频
+   上游 CoverImage 的 m_Color 是纯白 (1,1,1,1)，脚本按 alpha 0→1 淡入，所以这里也用白色 */
+.start__cover {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s var(--ease-out);
+}
+
+/* .start__cover.is-on — 遮罩已淡入 */
+.start__cover.is-on {
+  opacity: 1;
+}
+
+/* .start__tips — 底部提示（上游 TipsText：544×50，距底 92，带闪烁动画） */
+.start__tips {
+  position: absolute;
+  left: 50%;
+  bottom: 92px;
+  transform: translateX(-50%);
+  width: min(544px, 80vw);
+  text-align: center;
+  font-size: var(--fs-16);
+  color: #eaf2ff;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 12px rgb(0 0 0 / 65%);
+  animation: start-tips-blink 1.4s ease-in-out infinite;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+/* .start__tips.is-hidden — 收尾时隐藏提示 */
+.start__tips.is-hidden {
+  opacity: 0;
+  animation: none;
+}
+
+/* .start__enter — 「进入软件」（上游 160×30 居中按钮，文案来自 prefab 覆盖） */
+.start__enter {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: 30px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-13);
+  animation: start-enter-in 0.4s var(--ease-out) both;
+}
+
+/* .start__corner — 右上角新增能力（语言 / 主题 / 水印）；上游没有，收成小控件不抢版面 */
+.start__corner {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  background: rgb(6 12 20 / 42%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+@keyframes start-video-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes start-tips-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes start-enter-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}

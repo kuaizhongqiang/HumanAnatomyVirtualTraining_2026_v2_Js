@@ -1,0 +1,17 @@
+/* 样式入口：按「令牌 → 基座 → 骨架 → 组件」顺序引入。
+   新增样式时：先补 tokens.css 的变量，再在对应组件文件里加类，并在 docs/ui-spec.md 登记一行说明。 */
+
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';
+
+@import './components/control.css';
+@import './components/panel.css';
+@import './components/topbar.css';
+@import './components/stage.css';
+@import './components/system-tree.css';
+@import './components/detail.css';
+@import './components/chat.css';
+@import './components/toast.css';
+@import './components/screen-start.css';
+@import './components/screen-loading.css';

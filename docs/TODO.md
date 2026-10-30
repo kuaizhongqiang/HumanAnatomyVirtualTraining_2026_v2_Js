@@ -28,7 +28,8 @@
 | T-7 | 按 `AGENT.md` §3 映射表迁移上游剩余五域到 `src/`（`api` `control` `obj` `camera` `manager`），每目录一份 `README.md` | `D-20261030-06` |
 | T-8 | 调研 three.js 对次表面散射（SSS，皮肤/内脏材质）的支持与可行实现，结论落 `docs/architecture.md` §2.3 | 需求原件「SSS 材质」条 |
 | T-11 | AI 对话最小实现（单通道请求/响应 ＋ 会话历史），替换 mockup 的假回复 | `D-20261030-07` |
-| T-16 | 把 mockup 接成真实面板：数据换完整数据集、视口换 three.js（结构不变，只换数据源与 `renderStage()`） | `P-6`、T-7 |
+| T-16 | 把 mockup 接成真实面板：数据换完整数据集、视口换 three.js（结构不变，只换数据源与 `renderScene()`） | `P-6`、T-7 |
+| T-19 | 模型与贴图落地到 `public/media/{models,textures}`（blender 转 glb，按系统分目录），并把复制表补进 `pull-assets.mjs` | `T-15`（粒度）、`P-5`（转换方式） |
 
 ## 4 待拍板唯一清单（拍板后删行并记入 `DECISION.md`）
 
