@@ -27,14 +27,14 @@
 
 | 要查什么 | 去哪里 |
 |---|---|
-| 内容文档总览、写作约定 | `docs/README.md`（未建） |
-| 工程概述：定位、目标终端、技术栈与版本 | `docs/overview.md`（未建） |
-| 目录结构：模块布局、生成物、资源根 | `docs/structure.md`（未建） |
-| 仓库：版本控制、忽略链、分支模型 | `docs/repo.md`（未建） |
-| 架构：启动装配 → 数据加载 → 相机/体控 → 交互高亮 → UI 面板栈 → AI 工具调用闭环 | `docs/architecture.md`（未建） |
-| 业务域：九大系统 × 体素（男女两套）与教学内容 | `docs/business.md`（未建） |
+| 内容文档总览、写作约定、权威层级 | `docs/README.md` |
+| 工程概述：定位、目标终端、技术栈与版本、阶段 | `docs/overview.md` |
+| 目录结构：现有布局、`src/` 目标布局、产物、新路径检查清单 | `docs/structure.md` |
+| 仓库事实：远端、分支、忽略链、克隆后步骤 | `docs/repo.md` |
+| 架构：上游复原 ＋ Web 目标（初始化顺序、分层、渲染拾取、状态、AI 通道） | `docs/architecture.md` |
+| 业务域：九大系统、体素规模、字段字典、命名规则 | `docs/business.md` |
 | 当前状态与待办（**唯一清单**） | `docs/TODO.md` |
-| 已完成能力与交付进度（事实以 `RECORD.md` 为准） | `docs/progress.md`（未建） |
+| 已完成能力索引（事实以 `RECORD.md` 为准） | `docs/progress.md` |
 | 用户拍板记录（只追加） | `docs/DECISION.md` |
 | 提交台账（只追加） | `docs/RECORD.md` |
 | **需求原件（只读输入）** | `docs/requirement/raw/origin.md`（技术栈、仓库组织、功能与发布口径的原始出处；只读，不在此处改口径） |
