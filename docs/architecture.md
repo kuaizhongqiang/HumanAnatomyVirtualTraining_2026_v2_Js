@@ -76,6 +76,15 @@ src/ui  →  src/manager  →  src/{control,obj,camera,data}  →  src/api
 
 - **双语**：字典键 = 内容 `id` 或 UI 语义键；`name`/`engName` 直接来自数据，不再造一份。
 - **主题**：`data-theme="light|dark"` + CSS 变量 token；组件内零硬编码色值（`AGENT.md` §3）。
+- **布局**：全幅场景（`--tint` 染色的柔光 + 网格 + 人体占位）＋ **悬浮毛玻璃面板**（顶栏 / 系统树 / 详情 / AI 对话），坐标由 CSS 变量给，窄屏逐级收起（`--detail-w` → 隐藏详情 → 窄树）。
+- **玻璃材质**（借鉴 iOS 26 Liquid Glass，实现落在 `src/ui/shell.css`）：
+  - 基底 `backdrop-filter: blur(22px) saturate(175%) brightness(1.08)`——`saturate` + `brightness` 是"玻璃 vs 磨砂亚克力"的分界，缺一项就退化成雾面；
+  - 镜面高光：`::before` 用 `radial-gradient(... var(--light-x/y))`，指针位置由 `shell.ts` 的 `mousemove` 写入（无 JS 时有默认值）；
+  - 厚度与受光：`inset 0 1px 0 white/45%`（上缘硬高光）+ `inset 0 -1px 0 var(--edge-dark)`（下缘暗线）+ 大半径 `inset` 内发光模拟环境反弹光；
+  - 色散：`::after` 的 ±1px 红/蓝 `inset` 描边，透明度 12–14%（再高就"脏"）；
+  - 全局光来源：`.scene::after` 三团柔光（冷 / 暖 / **选中系统染色**），面板的模糊把它"吸"进来。
+- **明确不采纳**：`feTurbulence` + `feDisplacementMap` 的液态位移扭曲（两处来源都提到）——Safari 不支持 `backdrop-filter: url(#f)`，只能退化成外层 `filter` 包裹，而那样会把**文字一起扭**；数据密集型 UI 不接受可读性损失。**morph 动画**（`border-radius` 关键帧呼吸）同样不用于数据面板，仅属装饰。
+- **性能与降级**（来源明确提示每视口 2–3 个实时模糊面最稳）：当前 4 个大面板 + 3 个小胶囊，已在 `docs/TODO.md` `T-17` 登记"数量与移动端降级"待办；已加 `@supports not (backdrop-filter)` 的不透底兜底与 `prefers-reduced-motion` 关闭过渡。
 
 ### 2.6 AI 通道（`D-20261030-07`）
 

@@ -3,7 +3,7 @@
 读者：AI
 类型：提交台账（只追加）
 权威：已进入仓库的提交的唯一台账；待办见 `TODO.md`，拍板见 `DECISION.md`
-状态：2026-10-30 建立，记 7 条
+状态：2026-10-30 建立，记 8 条
 依赖：`AGENT.md` §4（提交纪律）、`docs/repo.md`（未建，仓库事实）
 
 ## 1 写法
@@ -25,3 +25,4 @@
 | R-20261030-05 | 2026-10-30 | 分支 `chore/gh-lane`（哈希见本 PR 合并提交） | PR 通道改用 `gh`：`AGENT.md` §5 增 PR/GitHub 命令区、`.workflow/README.md` §3 与 §5.1 补 `gh pr create/checks/merge`、`repo-commit`／`gate-triage`／`release` 三个技能改为 `gh` 口径 | `AGENT.md`、`.workflow/README.md`、`.agent/skills/`、`docs/RECORD.md` |
 | R-20261030-06 | 2026-10-30 | PR #1 `f713606`、PR #2 `3ce5901`；保护配置提交见本 PR | PR 通道实跑两例（`gh`）；仓库转 public 后开启 `main` 分支保护并把配置入库（`.workflow/branch-protection.json`），红线变硬约束；`T-12`、`T-14` 完成删条；补记 PR #2 的台账欠账 | `docs/repo.md`、`docs/TODO.md`、`docs/progress.md`、`.workflow/branch-protection.json`、`AGENT.md`、`.workflow/README.md` |
 | R-20261030-07 | 2026-10-30 | 分支 `feat/scaffold-ui-mockup`（哈希见本 PR 合并提交） | 工程脚手架（`vite`＋`ts` strict＋`vitest`＋`eslint`，四个脚本全绿）与 UI mockup（外壳 ＋ 明暗双主题 ＋ 中英双语 ＋ 采样数据 ＋ 7 例测试）；`T-2`、`T-10` 完成，`T-9` 收口为 `T-16` | `package.json`、`tsconfig.json`、`vite.config.ts`、`vitest.config.ts`、`eslint.config.js`、`index.html`、`src/`、`AGENT.md`、`docs/` |
+| R-20261030-08 | 2026-10-30 | 分支 `feat/liquid-glass`（哈希见本 PR 合并提交） | UI 由三列全屏改为**全幅场景 ＋ 悬浮毛玻璃面板**：`blur+saturate+brightness` 基底、指针跟随镜面高光、多层 `inset` 内发光与 ±1px 色散、`--tint` 系统染色全局光；`@supports` 与 `prefers-reduced-motion` 兜底；借鉴与不采纳理由落 `architecture.md` §2.5，新增 `T-17` | `src/ui/shell.css`、`src/ui/shell.ts`、`src/style.css`、`docs/architecture.md`、`docs/progress.md`、`docs/TODO.md`、`src/ui/README.md` |
