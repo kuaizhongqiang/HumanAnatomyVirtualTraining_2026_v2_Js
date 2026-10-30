@@ -109,6 +109,102 @@ export function mountModelPreview(host: HTMLElement, go: Go): void {
 
   const loader = new GLTFLoader();
 
+  /* ---------- 贴图档位（GLB 只带几何与材质名，贴图按 512→1024→2048→原图 逐级替换） ---------- */
+  interface TierEntry {
+    native: number;
+    source: string;
+    tiers: Record<string, string>;
+  }
+  interface TextureTable {
+    tiers: number[];
+    materials: Record<string, Partial<Record<'base' | 'normal' | 'mask', TierEntry>>>;
+  }
+
+  let texTable: TextureTable | null = null;
+  let tierText = '';
+  const texLoader = new THREE.TextureLoader();
+  const tierTimers: number[] = [];
+
+  /** 取不超过 want 的最大档位（不放大） */
+  function pickTier(entry: TierEntry, want: number): string | undefined {
+    const sizes = Object.keys(entry.tiers)
+      .map(Number)
+      .filter((n) => n <= want)
+      .sort((a, b) => b - a);
+    const hit = sizes[0];
+    return hit ? entry.tiers[String(hit)] : undefined;
+  }
+
+  /** 同一张图多材质共用：按 URL 缓存，避免重复解码（也避免误 dispose 掉别人还在用的贴图） */
+  const texCache = new Map<string, THREE.Texture>();
+  /** 每个材质当前挂的档位 URL，用来跳过重复赋值 */
+  const appliedTier = new Map<string, Record<string, string>>();
+
+  function getTexture(url: string, slot: 'base' | 'normal'): THREE.Texture {
+    const cached = texCache.get(url);
+    if (cached) return cached;
+    const tex = texLoader.load(url);
+    tex.flipY = false; // glTF 约定：几何 UV 已按 glTF 翻过
+    tex.colorSpace = slot === 'base' ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+    tex.anisotropy = 4;
+    texCache.set(url, tex);
+    return tex;
+  }
+
+  function applyTier(want: number): void {
+    if (!current || !texTable) return;
+    let applied = 0;
+    current.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      for (const raw of mats) {
+        const mat = raw as THREE.MeshStandardMaterial;
+        const spec = texTable?.materials[mat.name];
+        if (!spec) continue;
+        const done = appliedTier.get(mat.uuid) ?? {};
+        for (const slot of ['base', 'normal'] as const) {
+          const entry = spec[slot];
+          if (!entry) continue;
+          const url = pickTier(entry, want);
+          if (!url || done[slot] === url) continue; // 已经挂过这一档
+          const tex = getTexture(url, slot);
+          if (slot === 'base') {
+            mat.map = tex;
+            // Unity 材质里 _BaseColor 常是黑色（颜色全靠贴图），glTF 会把它当 baseColorFactor
+            // 与贴图相乘 → 整片发黑。挂上贴图后把 factor 复位成白色。
+            mat.color.setRGB(1, 1, 1);
+          } else {
+            mat.normalMap = tex;
+            mat.normalScale.set(1, 1);
+          }
+          mat.needsUpdate = true;
+          done[slot] = url;
+          applied++;
+        }
+        appliedTier.set(mat.uuid, done);
+      }
+    });
+    const realTier = texTable.tiers.filter((t) => t <= want).pop() ?? want;
+    tierText = `贴图 ${realTier}²（本次替换 ${applied} 张）`;
+    paintStats();
+  }
+
+  /** 先上最低档保首屏，再在空闲时逐级升到原图 */
+  function scheduleTiers(): void {
+    tierTimers.forEach((id) => window.clearTimeout(id));
+    tierTimers.length = 0;
+    const steps: Array<[number, number]> = [
+      [512, 0],
+      [1024, 400],
+      [2048, 1200],
+      [4096, 2600],
+    ];
+    for (const [want, delay] of steps) {
+      tierTimers.push(window.setTimeout(() => applyTier(want), delay));
+    }
+  }
+
   function resize(): void {
     const w = canvasHost.clientWidth;
     const h = canvasHost.clientHeight;
@@ -170,6 +266,24 @@ export function mountModelPreview(host: HTMLElement, go: Go): void {
     return { nodes, meshes, tris: Math.round(tris), maps };
   }
 
+  let lastStats: {
+    model: ManifestModel;
+    st: { nodes: number; meshes: number; tris: number; maps: Set<string> };
+    size: THREE.Vector3;
+    names: string[];
+  } | null = null;
+
+  function paintStats(): void {
+    if (!lastStats) return;
+    const { model, st, size, names } = lastStats;
+    statsEl.innerHTML = `
+      <b>${esc(model.label)}</b> · ${mb(model.bytes)} · 节点 ${st.nodes} · 网格 ${st.meshes} ·
+      三角面 ${st.tris.toLocaleString()} · 贴图 ${st.maps.size} 张 ·
+      尺寸 ${size.x.toFixed(2)} × ${size.y.toFixed(2)} × ${size.z.toFixed(2)}（米）
+      ${tierText ? `<span class="model-stage__tier">${esc(tierText)}</span>` : ''}
+      <span class="model-stage__sample">${esc(names.slice(0, 4).join(' · '))}${names.length > 4 ? ' …' : ''}</span>`;
+  }
+
   function loadModel(model: ManifestModel): void {
     activeId = model.id;
     paintList();
@@ -199,11 +313,9 @@ export function mountModelPreview(host: HTMLElement, go: Go): void {
         const box = new THREE.Box3().setFromObject(current);
         const size = box.getSize(new THREE.Vector3());
         const names = current.children.map((c) => c.name).filter(Boolean);
-        statsEl.innerHTML = `
-          <b>${esc(model.label)}</b> · ${mb(model.bytes)} · 节点 ${st.nodes} · 网格 ${st.meshes} ·
-          三角面 ${st.tris.toLocaleString()} · 贴图 ${st.maps.size} 张 ·
-          尺寸 ${size.x.toFixed(2)} × ${size.y.toFixed(2)} × ${size.z.toFixed(2)}（米）
-          <span class="model-stage__sample">${esc(names.slice(0, 4).join(' · '))}${names.length > 4 ? ' …' : ''}</span>`;
+        lastStats = { model, st, size, names };
+        paintStats();
+        scheduleTiers(); // 贴图：先 512²，再逐级升到原图
       },
       undefined,
       (err) => {
@@ -303,10 +415,12 @@ export function mountModelPreview(host: HTMLElement, go: Go): void {
   Promise.all([
     fetch(`${MODELS}manifest.json`).then((r) => (r.ok ? r.json() : { models: [] })),
     fetch(`${MODELS}verify-report.json`).then((r) => (r.ok ? r.json() : { results: [] })),
+    fetch(`${MODELS}textures.json`).then((r) => (r.ok ? r.json() : null)),
   ])
-    .then(([m, v]) => {
+    .then(([m, v, t]) => {
       manifest = (m as { models: ManifestModel[] }).models ?? [];
       verify = (v as { results: VerifyEntry[] }).results ?? [];
+      texTable = (t as TextureTable | null) ?? null;
       if (!manifest.length) {
         statsEl.innerHTML = '<span style="color:#ef6a5f">没有模型清单：先跑 convert-models.mjs</span>';
         return;

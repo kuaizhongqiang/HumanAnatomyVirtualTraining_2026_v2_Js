@@ -3,7 +3,7 @@
 读者：AI
 类型：拍板台账（只追加）
 权威：负责人已拍板口径的唯一台账；待拍板项在 `TODO.md` §4
-状态：2026-10-30 建立，记 12 条（01～02 协作口径，03～07 由需求原件 `requirement/raw/origin.md` 落账，08 流程目录与门禁，09 两条通道与 tag 规则，10 禁止直接提交，11 媒体资产单一根且不入库）
+状态：2026-10-30 建立，记 13 条（01～02 协作口径，03～07 由需求原件 `requirement/raw/origin.md` 落账，08 流程目录与门禁，09 两条通道与 tag 规则，10 禁止直接提交，11 媒体资产单一根且不入库）
 依赖：`AGENT.md` §1（唯一手册与文档分工）
 
 ## 1 写法
@@ -85,3 +85,9 @@
 决定：FBX→GLB 不由 Blender 自由导，而是**材质表驱动**——先解析 `Assets/Shader/Model/*.shadergraph` 的属性（贴图槽位语义）与 `Model/Male/Materials/*.mat` 的实际贴图引用（含 `_BaseMap` / `_BaseNormalMap` / `_MaskMap`），生成 `material-map.json`，再由 `fbx2glb.py` 按表重建材质（baseColor sRGB / normal Non-Color）并降采样贴图后导出；导出后用 `verify-models.mjs` 与 `Prefabs/Model/MaleBody.prefab` 的节点表、以及 `HumanBodyData.json` 的体素 id 逐项核对；**多维子材质**（prefab 材质槽数 > 1 的网格）单独统计，不得合并成单材质。
 影响：贴图语义以 Unity 材质为准，禁止按文件名猜；GLB 必须内嵌贴图且体积受控（base 2048 / normal 1024 JPEG，整包约 22MB）；节点名与体素 id 的差异必须显式记录，不静默放过。
 落地：`.workflow/scripts/build-material-map.mjs`、`fbx2glb.py`、`verify-models.mjs`；`src/ui/screens/model.ts`（`?screen=model` 预览页）。
+
+### D-20261030-13 贴图多精度外挂（GLB 不内嵌）
+
+决定：GLB 只带几何与材质名，**贴图不内嵌**；贴图按 `512 / 1024 / 2048 / 4096` 四档生成 WebP（法线不用 JPEG），页面先上最低档，空闲后逐级升到原图。上游贴图以 2048² 为主，另有 4096² 与 8192² 各一张，8K 档限到 4096。
+影响：首屏只付 512 档（16 个材质约 3.5MB）；升级发生在渲染空闲，不阻塞交互；`public/media/textures/` 仍整体不入库，由脚本可重算。**最低档不作为最终质量**——它是首帧占位，必须升到与原图同档。
+落地：`.workflow/scripts/build-texture-tiers.mjs`（sharp 生成档位 + `textures.json`）、`fbx2glb.py`（`export_image_format=NONE`）、`src/ui/screens/model.ts`（`scheduleTiers()` 逐级替换 + HUD 显示档位）。

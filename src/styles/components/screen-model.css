@@ -193,6 +193,13 @@
   font-weight: var(--fw-semibold);
 }
 
+/* .model-stage__tier — 贴图档位提示（512² → 2048² 逐级升） */
+.model-stage__tier {
+  display: block;
+  margin-top: 2px;
+  color: #9df0c4;
+}
+
 /* .model-stage__sample — 节点名样例 */
 .model-stage__sample {
   display: block;

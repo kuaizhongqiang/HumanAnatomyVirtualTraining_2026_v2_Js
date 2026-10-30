@@ -17,10 +17,13 @@ if len(argv) < 3:
     sys.exit(2)
 
 src, dst, matmap_path = argv[0], argv[1], argv[2]
-tex_dirs = [p for p in argv[3:] if p and not p.startswith("out=")]
+tex_dirs = [p for p in argv[3:] if p and not p.startswith(("out=", "base=", "normal=", "cap="))]
 tex_out = next((p[4:] for p in argv[3:] if p.startswith("out=")), "")
-base_max = int(next((p[6:] for p in argv[3:] if p.startswith("base=")), "2048"))
-normal_max = int(next((p[8:] for p in argv[3:] if p.startswith("normal=")), "1024"))
+# 默认保原分辨率（上游贴图以 2048² 为主，另有 4096² / 8192² 各一张）；
+# 只有显式给 base=/normal= 才降采样。cap= 用于单独压掉那张 8K。
+base_max = int(next((p[6:] for p in argv[3:] if p.startswith("base=")), "0"))
+normal_max = int(next((p[8:] for p in argv[3:] if p.startswith("normal=")), "0"))
+cap_max = int(next((p[4:] for p in argv[3:] if p.startswith("cap=")), "0"))
 report_path = dst + ".report.json"
 
 with open(matmap_path, "r", encoding="utf-8") as fp:
@@ -57,20 +60,35 @@ def find_texture(path):
 
 
 def shrink(path, max_side, tag):
-    """贴图降采样：4K 原图直接内嵌会让 GLB 到 100MB+，导出前统一压到 max_side 的 JPEG"""
+    """按需重编码贴图。
+
+    max_side = 0 表示保原分辨率、只转 WebP（无损地保住细节，体积比 PNG 小很多）；
+    给了 max_side 才降采样；cap= 只用于压掉个别 8K。
+    法线图不能走 JPEG（会引入色彩块、破坏法线方向），所以统一 WebP。
+    """
     if not tex_out:
         return path
     os.makedirs(tex_out, exist_ok=True)
-    name = "%s_%s.jpg" % (os.path.splitext(os.path.basename(path))[0], tag)
-    out = os.path.join(tex_out, name)
     img = bpy.data.images.load(path, check_existing=False)
     w, h = img.size
-    scale = min(1.0, float(max_side) / max(w, h))
-    if scale < 1.0:
+    limit = max_side or cap_max
+    if limit and max(w, h) > limit:
+        scale = float(limit) / max(w, h)
         img.scale(max(1, int(w * scale)), max(1, int(h * scale)))
-    img.filepath_raw = out
-    img.file_format = "JPEG"
-    img.save()
+        w, h = img.size
+    name = "%s_%s_%dx%d.webp" % (os.path.splitext(os.path.basename(path))[0], tag, w, h)
+    out = os.path.join(tex_out, name)
+    if not os.path.exists(out):
+        # Blender 4.0 用 image.file_format 写 WebP 不稳定，改用场景设置 + 另存
+        img.filepath_raw = out
+        img.file_format = "WEBP"
+        try:
+            img.save()
+        except Exception:
+            img.file_format = "PNG"
+            out = out.replace(".webp", ".png")
+            img.filepath_raw = out
+            img.save()
     bpy.data.images.remove(img)
     return out
 
@@ -146,7 +164,9 @@ bpy.ops.export_scene.gltf(
     export_apply=True,
     export_yup=True,
     export_materials="EXPORT",
-    export_image_format="AUTO",
+    # 贴图不内嵌：多精度档位由 build-texture-tiers.mjs 生成、页面按档位替换，
+    # 内嵌会把 GLB 顶到 100MB+，首屏没法看（见 D-20261030-13）
+    export_image_format="NONE",
 )
 
 triangles = 0

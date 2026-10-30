@@ -32,6 +32,7 @@
 | T-19 | 模型与贴图落地到 `public/media/{models,textures}`（blender 转 glb，按系统分目录），并把复制表补进 `pull-assets.mjs` | **进行中**：整体人体 `MaleBody.glb` 已通（22MB / 374 节点 / 19 材质），分系统与女性模型待转 |
 | T-20 | 核实两处节点命名差异：GLB 有 `LymphaticSystem_3` / `UrinarySystem_Ureter`，prefab 与数据契约为 `LymphaticSystem_Lymphocyte` / `UrinarySystem_Urethra`；确认是改 GLB 节点名还是改映射表 | `D-20261030-12`；不解决则点选对不上 id |
 | T-21 | 分系统 fbx 是整块合并网格（1 节点 / 1 材质），无法体素级点选；需定"按系统拆子网格"还是"整体人体模型承担点选、分系统只做叠加显示" | `T-15`（粒度）、`T-20` |
+| T-22 | 头部发黑待查：外挂贴图后在预览页头部呈暗色块，身体正常；已排除贴图内容偏暗（采样均值正常）与 baseColorFactor 相乘（已复位为白），下一步查该 mesh 的材质名是否落在未解析的 5 个材质里（`Body_Body` / `BodyAlpha` / `Section` 等） | `D-20261030-13`；影响贴图正确性验收 |
 
 ## 4 待拍板唯一清单（拍板后删行并记入 `DECISION.md`）
 
