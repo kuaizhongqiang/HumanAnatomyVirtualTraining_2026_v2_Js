@@ -3,7 +3,7 @@
 读者：AI
 类型：提交台账（只追加）
 权威：已进入仓库的提交的唯一台账；待办见 `TODO.md`，拍板见 `DECISION.md`
-状态：2026-10-30 建立，记 9 条
+状态：2026-10-30 建立，记 10 条
 依赖：`AGENT.md` §4（提交纪律）、`docs/repo.md`（未建，仓库事实）
 
 ## 1 写法
@@ -27,3 +27,4 @@
 | R-20261030-07 | 2026-10-30 | 分支 `feat/scaffold-ui-mockup`（哈希见本 PR 合并提交） | 工程脚手架（`vite`＋`ts` strict＋`vitest`＋`eslint`，四个脚本全绿）与 UI mockup（外壳 ＋ 明暗双主题 ＋ 中英双语 ＋ 采样数据 ＋ 7 例测试）；`T-2`、`T-10` 完成，`T-9` 收口为 `T-16` | `package.json`、`tsconfig.json`、`vite.config.ts`、`vitest.config.ts`、`eslint.config.js`、`index.html`、`src/`、`AGENT.md`、`docs/` |
 | R-20261030-08 | 2026-10-30 | 分支 `feat/liquid-glass`（哈希见本 PR 合并提交） | UI 由三列全屏改为**全幅场景 ＋ 悬浮毛玻璃面板**：`blur+saturate+brightness` 基底、指针跟随镜面高光、多层 `inset` 内发光与 ±1px 色散、`--tint` 系统染色全局光；`@supports` 与 `prefers-reduced-motion` 兜底；借鉴与不采纳理由落 `architecture.md` §2.5，新增 `T-17` | `src/ui/shell.css`、`src/ui/shell.ts`、`src/style.css`、`docs/architecture.md`、`docs/progress.md`、`docs/TODO.md`、`src/ui/README.md` |
 | R-20261030-09 | 2026-10-30 | 分支 `feat/ui-pages-assets`（哈希见本 PR 合并提交） | ① 样式拆四层（`tokens`/`base`/`layout`/`components`，class 清单落 `docs/ui-spec.md`）；② 三屏（`start`/`loading`/`content`）＋ `app.ts` 状态机；③ 开始页与加载页按上游 `StartPanel`/`LoadingPanel` 照搬（`<video>` 开场、任意点击跳过、纯白遮罩、「进入软件」；加载=背景＋随机提示＋进度条）；④ 媒体资产归并到单一根 `public/media/` 并整目录忽略，新增 `pull-assets.mjs` 恢复；⑤ `docs/design/` 设计样张（令牌页 ＋ 9 幕合屏 ＋ 8 面板逐节 ＋ 覆盖矩阵 ＋ 17 张预览 ＋ 重渲脚本）；落账 `D-20261030-11`，新增 `T-19` | `src/styles/`、`src/ui/`、`docs/design/`、`docs/ui-spec.md`、`.workflow/scripts/pull-assets.mjs`、`.gitignore`、`AGENT.md`、`docs/structure.md`、`docs/repo.md`、`docs/DECISION.md`、`docs/progress.md`、`docs/TODO.md` |
+| R-20261030-10 | 2026-10-30 | 分支 `feat/model-preview`（哈希见本 PR 合并提交） | ① 媒体再收口：设计预览图 `docs/design/preview/` 入忽略并从索引移除；② 模型管线打通：`build-material-map.mjs`（ShaderGraph 属性 + `.mat` 贴图槽位 + prefab 材质槽直方图）、`fbx2glb.py`（按材质表重建材质、贴图降采样、正确单位口径）、`verify-models.mjs`（GLB 节点 vs prefab、分系统 vs 数据契约）；③ 新增 `?screen=model` 预览页；④ 落账 `D-20261030-12`，新增 `T-20` `T-21` | `.workflow/scripts/`、`src/ui/screens/model.ts`、`src/styles/components/screen-model.css`、`src/ui/app.ts`、`docs/` |

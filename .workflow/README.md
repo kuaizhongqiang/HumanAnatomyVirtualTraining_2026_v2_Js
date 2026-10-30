@@ -13,6 +13,9 @@
 | `scripts/gate-*.mjs` | 可执行的判定逻辑（零依赖，node ≥ 18） | 业务代码、需要 `npm install` 的依赖 |
 | `scripts/install-hooks.mjs` | 把 `hooks/` 装到 `.git/hooks/` | — |
 | `scripts/pull-assets.mjs` | 从上游 Unity 工程把视频 / 图片 / 模型 / 贴图复制到 `public/media/`（该目录不入库） | 手工零散把素材塞进别的目录 |
+| `scripts/build-material-map.mjs` | 解析 `*.shadergraph` 属性 + `.mat` 贴图槽位 + prefab 材质槽直方图，生成 `material-map.json` | 靠文件名猜贴图语义 |
+| `scripts/fbx2glb.py` | Blender 无头：按材质表重建材质（baseColor/normal）、贴图降采样后导出 GLB | 直接导出不接材质 |
+| `scripts/verify-models.mjs` | 导出后核对：GLB 节点 vs prefab 节点、分系统 GLB vs 数据契约 | 只凭肉眼看模型 |
 | `hooks/` | `pre-commit`、`commit-msg` 两个 sh 包装，只调用 `scripts/` | 判定逻辑（逻辑只写一份） |
 | `templates/` | 提交说明等模板 | 待办 / 拍板（归 `docs/`） |
 

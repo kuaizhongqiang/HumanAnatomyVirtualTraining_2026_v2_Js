@@ -3,7 +3,7 @@
 读者：AI
 类型：拍板台账（只追加）
 权威：负责人已拍板口径的唯一台账；待拍板项在 `TODO.md` §4
-状态：2026-10-30 建立，记 11 条（01～02 协作口径，03～07 由需求原件 `requirement/raw/origin.md` 落账，08 流程目录与门禁，09 两条通道与 tag 规则，10 禁止直接提交，11 媒体资产单一根且不入库）
+状态：2026-10-30 建立，记 12 条（01～02 协作口径，03～07 由需求原件 `requirement/raw/origin.md` 落账，08 流程目录与门禁，09 两条通道与 tag 规则，10 禁止直接提交，11 媒体资产单一根且不入库）
 依赖：`AGENT.md` §1（唯一手册与文档分工）
 
 ## 1 写法
@@ -79,3 +79,9 @@
 决定：视频 / 图片 / 模型 / 贴图**只有一个根** `public/media/`（`ui/` `video/` `models/` `textures/`），整目录进 `.gitignore`、一律不提交；本地用 `.workflow/scripts/pull-assets.mjs` 从上游 Unity 工程恢复。
 影响：仓库不含媒体二进制，clone 后必须先跑一次恢复脚本，否则开始/加载页无图、模型无 GLB；代码引用统一写相对路径 `media/...`；后续新增素材只改脚本的复制表，不再往仓库塞文件。
 落地：`.gitignore`（`public/media/`）、`.workflow/scripts/pull-assets.mjs`、`AGENT.md` §3（媒体资产）、`docs/structure.md` §3、`docs/repo.md` §4/§5、`docs/design/README.md` §3.3。
+
+### D-20261030-12 模型管线：ShaderGraph 解析 + 材质表驱动 + 导出后核对
+
+决定：FBX→GLB 不由 Blender 自由导，而是**材质表驱动**——先解析 `Assets/Shader/Model/*.shadergraph` 的属性（贴图槽位语义）与 `Model/Male/Materials/*.mat` 的实际贴图引用（含 `_BaseMap` / `_BaseNormalMap` / `_MaskMap`），生成 `material-map.json`，再由 `fbx2glb.py` 按表重建材质（baseColor sRGB / normal Non-Color）并降采样贴图后导出；导出后用 `verify-models.mjs` 与 `Prefabs/Model/MaleBody.prefab` 的节点表、以及 `HumanBodyData.json` 的体素 id 逐项核对；**多维子材质**（prefab 材质槽数 > 1 的网格）单独统计，不得合并成单材质。
+影响：贴图语义以 Unity 材质为准，禁止按文件名猜；GLB 必须内嵌贴图且体积受控（base 2048 / normal 1024 JPEG，整包约 22MB）；节点名与体素 id 的差异必须显式记录，不静默放过。
+落地：`.workflow/scripts/build-material-map.mjs`、`fbx2glb.py`、`verify-models.mjs`；`src/ui/screens/model.ts`（`?screen=model` 预览页）。

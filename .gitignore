@@ -1,4 +1,4 @@
-# 依赖与构建产物（产物目录只有这两个，见 AGENT.md §3）
+﻿# 依赖与构建产物（产物目录只有这两个，见 AGENT.md §3）
 node_modules/
 dist/
 release/
@@ -9,6 +9,9 @@ coverage/
 # 媒体资产：视频 / 图片 / 模型 / 贴图统一在 public/media/，一律不入库
 # 恢复方式：node .workflow/scripts/pull-assets.mjs（从上游 Unity 工程复制）
 public/media/
+
+# 设计预览图：由 docs/design/tools/render-previews.ps1 生成，不入库（本地现渲）
+docs/design/preview/
 
 # 日志与临时文件
 *.log

@@ -1,11 +1,12 @@
 import type { Gender } from '../data/types';
 import { mountContent } from './screens/content';
 import { mountLoading } from './screens/loading';
+import { mountModelPreview } from './screens/model';
 import { mountStart } from './screens/start';
 import { ensureTheme } from './theme';
 
-/** 三个屏幕，对应上游场景：1_Start / LoadingPanel / 2_Content */
-export type ScreenName = 'start' | 'loading' | 'content';
+/** 三个正式屏幕（1_Start / LoadingPanel / 2_Content）＋ 一个实验用模型预览页 */
+export type ScreenName = 'start' | 'loading' | 'content' | 'model';
 
 export interface AppState {
   screen: ScreenName;
@@ -21,9 +22,10 @@ const VERSION = '0.0.0';
 export function mountApp(root: HTMLElement): void {
   ensureTheme();
 
-  // ?screen=start|loading|content 供评审与截图直达某一屏（不落盘）
+  // ?screen=start|loading|content|model 供评审与截图直达某一屏（不落盘）
   const wanted = new URLSearchParams(window.location.search).get('screen');
-  const initial: ScreenName = wanted === 'loading' || wanted === 'content' ? wanted : 'start';
+  const initial: ScreenName =
+    wanted === 'loading' || wanted === 'content' || wanted === 'model' ? wanted : 'start';
 
   const state: AppState = { screen: initial, gender: 'male', version: VERSION };
   const go: Go = (screen) => {
@@ -40,6 +42,9 @@ export function mountApp(root: HTMLElement): void {
         break;
       case 'content':
         mountContent(app, state, go);
+        break;
+      case 'model':
+        mountModelPreview(app, go);
         break;
       default:
         mountStart(app, state, go);

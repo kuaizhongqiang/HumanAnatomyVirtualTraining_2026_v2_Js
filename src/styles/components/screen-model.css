@@ -1,0 +1,213 @@
+/* 屏幕：模型预览（实验/评审页，?screen=model）
+   左：模型清单与 Unity 核对结果；右：three.js 视口。 */
+
+/* .screen--model — 左右两栏铺满 */
+.screen--model {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: #070d15;
+}
+
+/* .model-panel — 左栏玻璃面板 */
+.model-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 380px;
+  flex: none;
+  padding: var(--space-4);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: var(--glass);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  color: var(--c-text-1);
+  overflow-y: auto;
+}
+
+/* .model-panel__head — 标题行 */
+.model-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.model-panel__head h1 {
+  margin: 0;
+  font-size: var(--fs-16);
+  font-weight: var(--fw-semibold);
+}
+
+/* .model-panel__hint — 一句话说明核对口径 */
+.model-panel__hint {
+  margin: 0;
+  font-size: var(--fs-11);
+  line-height: var(--lh-base);
+  color: var(--c-text-3);
+}
+
+/* .model-list — 模型清单 */
+.model-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+}
+
+/* .model-item — 清单项（两行：名称 + 规模） */
+.model-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  text-align: left;
+  color: var(--c-text-2);
+}
+
+.model-item:hover {
+  background: color-mix(in srgb, var(--c-text-1) 8%, transparent);
+}
+
+/* .model-item--active — 当前加载的模型 */
+.model-item--active {
+  background: color-mix(in srgb, var(--c-brand) 20%, transparent);
+  color: var(--c-text-1);
+  box-shadow: inset 2px 0 0 var(--c-brand);
+}
+
+.model-item__name {
+  font-size: var(--fs-13);
+  font-weight: var(--fw-medium);
+}
+
+.model-item__meta {
+  font-size: var(--fs-11);
+  color: var(--c-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* .model-check — 核对结果区 */
+.model-check {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid color-mix(in srgb, var(--c-text-1) 10%, transparent);
+}
+
+.model-check__row {
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--c-text-1) 5%, transparent);
+}
+
+.model-check__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-12);
+}
+
+.model-check__title code {
+  font-family: var(--font-mono);
+  color: var(--c-brand);
+}
+
+/* .model-check__badge — 结论徽标 */
+.model-check__badge {
+  margin-left: auto;
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--c-text-1) 12%, transparent);
+  font-size: 10px;
+  color: var(--c-text-2);
+}
+
+.model-check__badge.is-ok {
+  background: color-mix(in srgb, #3fbf7f 30%, transparent);
+  color: #9df0c4;
+}
+
+.model-check__badge.is-warn {
+  background: color-mix(in srgb, #e8a33d 32%, transparent);
+  color: #ffd79a;
+}
+
+.model-check__body {
+  margin-top: var(--space-1);
+  font-size: var(--fs-11);
+  line-height: 1.7;
+  color: var(--c-text-2);
+  word-break: break-word;
+}
+
+.model-check__none {
+  margin: 0;
+  font-size: var(--fs-12);
+  color: var(--c-text-3);
+}
+
+/* .model-stage — 右侧视口容器 */
+.model-stage {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #0a1420;
+}
+
+/* .model-stage__tools — 左上工具组 */
+.model-stage__tools {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 2;
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* .model-stage__stats — 顶部读数列 */
+.model-stage__stats {
+  position: absolute;
+  top: calc(var(--space-3) + 44px);
+  left: var(--space-3);
+  right: var(--space-3);
+  z-index: 2;
+  font-size: var(--fs-11);
+  line-height: 1.7;
+  color: var(--c-text-2);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.model-stage__stats b {
+  color: var(--c-text-1);
+  font-weight: var(--fw-semibold);
+}
+
+/* .model-stage__sample — 节点名样例 */
+.model-stage__sample {
+  display: block;
+  color: var(--c-text-3);
+  font-family: var(--font-mono);
+}
+
+/* .model-stage__canvas — three.js 画布宿主 */
+.model-stage__canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.model-stage__canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

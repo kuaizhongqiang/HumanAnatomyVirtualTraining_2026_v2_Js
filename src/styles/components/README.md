@@ -13,6 +13,7 @@ Files:
 - `toast.css` — `.toast` 轻提示。
 - `screen-start.css` — `.start__*` 开始页。
 - `screen-loading.css` — `.loading__*` 加载页。
+- `screen-model.css` — `.screen--model` / `.model-panel*` / `.model-stage*` 模型预览页（实验页）。
 
 Exports: 无（仅被 `../index.css` 引入）。
 

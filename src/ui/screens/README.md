@@ -6,6 +6,7 @@ Files:
 - `start.ts` — 开始页：品牌、性别选择、语言/主题、进入（→ `loading`）。
 - `loading.ts` — 加载页：进度条 + 四阶段清单；结构只渲染一次，之后原地改进度；完成自动进 `content`，可取消回 `start`。
 - `content.ts` — 内容页：全幅场景 + 四块悬浮面板（顶栏/系统树/详情/对话），含选中态、拆分、透明度、镜面高光跟随。
+- `model.ts` — 模型预览页（`?screen=model`，实验/评审用）：three.js 视口加载 `media/models/*.glb`，左栏列模型与 Unity prefab 核对结果；文案为开发期直写，不进正式界面。
 
 Exports: 每个模块一个 `mountX(host, ...)`，签名由 `../app.ts` 调用约定。
 
