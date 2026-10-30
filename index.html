@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>人体解剖学知识仿真实训软件</title>
+    <script>
+      // 主题要在首帧前定，避免闪白
+      (function () {
+        try {
+          // ?theme=dark|light 便于评审与截图，优先生效但不落盘
+          var query = new URLSearchParams(location.search).get('theme');
+          if (query === 'dark' || query === 'light') {
+            document.documentElement.setAttribute('data-theme', query);
+            return;
+          }
+          var saved = localStorage.getItem('anatomy.theme');
+          var theme = saved === 'light' || saved === 'dark'
+            ? saved
+            : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) { /* 隐私模式下忽略 */ }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

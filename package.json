@@ -1,0 +1,26 @@
+{
+  "name": "human-anatomy-virtual-training-2026-v2",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "人体解剖学知识仿真实训软件 2026 v2（Web / three.js）",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "typescript": "^5.6.0",
+    "typescript-eslint": "^8.10.0",
+    "vite": "^5.4.0",
+    "vitest": "^2.1.0"
+  }
+}
